@@ -419,7 +419,7 @@
             gameScreen.style.display = 'flex';
             shuffleSignals(signals);
             loadNextSignal();
-            startTimer();
+            // Removed startTimer() from here to prevent multiple timers
         }
 
         /**
