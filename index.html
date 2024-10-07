@@ -1,180 +1,597 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fantasy Team Name Randomizer</title>
-  <!-- Tailwind CSS CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@0.244.0/dist/lucide.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referee Signal Charades</title>
+    <style>
+        /* Reset and Basic Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive; /* Pixelated Font for 90s Aesthetic */
+            background-color: #1e1e1e;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Start Screen */
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #start-screen h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-shadow: 2px 2px #000;
+        }
+
+        #start-button {
+            padding: 15px 30px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px #999;
+        }
+
+        #start-button:hover {
+            background-color: #45a049;
+        }
+
+        #start-button:active {
+            background-color: #45a049;
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
+        }
+
+        /* Game Screen */
+        #game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        #signal-image {
+            width: 80%;
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            border: 5px solid #4CAF50;
+            border-radius: 10px;
+            image-rendering: pixelated; /* Maintain Pixel Art Quality */
+        }
+
+        #timer {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #FF5722;
+        }
+
+        #guess-input {
+            padding: 10px;
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            outline: none;
+            background-color: #333;
+            color: #fff;
+        }
+
+        #submit-guess {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #2196F3;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px #999;
+        }
+
+        #submit-guess:hover {
+            background-color: #0b7dda;
+        }
+
+        #submit-guess:active {
+            background-color: #0b7dda;
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #FFC107;
+        }
+
+        /* Leaderboard */
+        #leaderboard {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #000;
+        }
+
+        #leaderboard h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #FF9800;
+            text-shadow: 1px 1px #000;
+        }
+
+        #leaderboard-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
+
+        #leaderboard-list li {
+            background-color: #333;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: inset 0 0 5px #000;
+        }
+
+        /* Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #2c2c2c;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%; 
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 0 20px #000;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Instructions Button */
+        #instructions-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #FF9800;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px #999;
+        }
+
+        #instructions-button:hover {
+            background-color: #e68900;
+        }
+
+        #instructions-button:active {
+            background-color: #e68900;
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            #signal-image {
+                width: 90%;
+            }
+
+            #guess-input, #submit-guess {
+                width: 90%;
+            }
+
+            #leaderboard {
+                max-width: 90%;
+            }
+        }
+
+        /* Additional Styling for Pixel Art Feel */
+        body, button, input {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Scrollbar Styling */
+        #leaderboard-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #leaderboard-list::-webkit-scrollbar-track {
+            background: #444;
+            border-radius: 10px;
+        }
+
+        #leaderboard-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        #leaderboard-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+    <!-- Google Fonts for Pixelated Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="w-full max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-    <div class="p-6">
-      <h1 class="text-2xl font-bold text-center mb-4">Fantasy Team Name Randomizer</h1>
-      <div class="text-center">
-        <h2 id="team-name" class="text-3xl font-extrabold mb-4">Loading...</h2>
-        <button id="generate-btn" class="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none">Generate New Name</button>
-        <div class="flex justify-center space-x-2">
-          <button onclick="share('reddit')" class="flex items-center px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 focus:outline-none">
-            <svg id="share-reddit" class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <!-- Reddit Icon SVG -->
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168c.664-.318 1.148-1.02 1.148-1.807 0-1.066-.864-1.93-1.93-1.93-.986 0-1.785.793-1.785 1.78 0 .791.483 1.493 1.147 1.81M8.25 9h.008v.008H8.25V9zm7.5 0h.008v.008H15.75V9zm-7.5 3h.008v.008H8.25V12zm7.5 0h.008v.008H15.75V12zm-7.5 3h.008v.008H8.25V15zm7.5 0h.008v.008H15.75V15z" />
-            </svg>
-            Reddit
-          </button>
-          <button onclick="share('twitter')" class="flex items-center px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 focus:outline-none">
-            <svg id="share-twitter" class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <!-- Twitter Icon SVG -->
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19c-5 0-9-4-9-9 0-.14 0-.28.01-.42A6.48 6.48 0 002 9.5a6.66 6.66 0 003.18.87A3.3 3.3 0 002.88 6.1a3.28 3.28 0 005.6 2.99A9.325 9.325 0 010 4.75a3.28 3.28 0 001.02 4.38A3.22 3.22 0 01.64 9v.04a3.28 3.28 0 002.63 3.2 3.3 3.3 0 01-.86.12 3.23 3.23 0 01-.62-.06 3.28 3.28 0 003.06 2.28A6.588 6.588 0 010 16.58a9.29 9.29 0 005.03 1.47" />
-            </svg>
-            Twitter
-          </button>
-          <button onclick="share('facebook')" class="flex items-center px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 focus:outline-none">
-            <svg id="share-facebook" class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-              <!-- Facebook Icon SVG -->
-              <path d="M22.675 0h-21.35C.595 0 0 .594 0 1.326v21.348C0 23.406.595 24 1.325 24h11.495v-9.294H9.691v-3.622h3.129V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.763v2.313h3.59l-.467 3.622h-3.123V24h6.116C23.406 24 24 23.406 24 22.674V1.326C24 .594 23.406 0 22.675 0z"/>
-            </svg>
-            Facebook
-          </button>
+<body>
+
+    <!-- Instructions Modal -->
+    <div id="instructions-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>How to Play</h2>
+            <p>
+                Welcome to Referee Signal Charades! Here's how to play:
+            </p>
+            <ol>
+                <li>Click the "Start" button to begin the game.</li>
+                <li>A random NFL referee signal will be displayed as a pixel art character.</li>
+                <li>Act out the signal for your friends to guess within the time limit.</li>
+                <li>Friends enter their guesses into the input field.</li>
+                <li>Points are awarded for correct guesses.</li>
+                <li>Try to achieve the highest score possible!</li>
+            </ol>
+            <p>Good luck and have fun!</p>
         </div>
-      </div>
-      <p class="text-center text-sm text-gray-500 mt-4">Click 'Generate New Name' for more outrageous team names!</p>
     </div>
-  </div>
 
-  <!-- JavaScript Logic -->
-  <script>
-    // Adjectives Array
-    const adjectives = [
-      // Original Adjectives
-      'Mighty', 'Fierce', 'Golden', 'Savage', 'Blazing', 'Thundering', 'Cosmic', 'Mystic',
-      'Raging', 'Frozen', 'Wacky', 'Silly', 'Crazy', 'Zany', 'Quirky', 'Epic', 'Legendary',
-      'Ninja', 'Turbo', 'Funky', 'Groovy', 'Bouncy', 'Jolly', 'Sassy', 'Whacky', 'Hyper',
-      'Snazzy', 'Spunky', 'Bizarre', 'Giggle', 'Punky', 'Crazy', 'Radical', 'Hilarious',
-      'Dizzy', 'Jazzy', 'Kooky', 'Loopy', 'Peppy', 'Twisted', 'Vivid', 'Witty', 'Zesty',
-      'Funky', 'Lively', 'Playful', 'Cheeky', 'Bold', 'Brisk', 'Chipper', 'Daring', 'Feisty',
-      'Giddy', 'Happy', 'Jumpy', 'Lively', 'Merry', 'Perky', 'Reckless', 'Spirited', 'Upbeat',
+    <!-- Instructions Button -->
+    <button id="instructions-button">?</button>
 
-      // Additional Adjectives
-      'Absurd', 'Agile', 'Ancient', 'Angry', 'Animated', 'Astonishing', 'Awesome', 'Baffling',
-      'Barbaric', 'Beaming', 'Berserk', 'Bizarre', 'Blithesome', 'Bouncy', 'Brainy', 'Brave',
-      'Bright', 'Brisk', 'Brooding', 'Brutal', 'Buoyant', 'Calm', 'Candid', 'Capricious',
-      'Carefree', 'Cheerful', 'Chipper', 'Chipper', 'Clever', 'Clumsy', 'Cockeyed', 'Colorful',
-      'Comical', 'Confused', 'Courageous', 'Crazy', 'Creepy', 'Crispy', 'Crusty', 'Curious',
-      'Dandy', 'Daring', 'Dazzling', 'Delightful', 'Demonic', 'Delirious', 'Determined',
-      'Devilish', 'Dizzy', 'Dorky', 'Dynamic', 'Eager', 'Eccentric', 'Edgy', 'Effervescent',
-      'Electric', 'Elegant', 'Enigmatic', 'Enthusiastic', 'Ethereal', 'Euphoric', 'Exuberant',
-      'Fabulous', 'Fierce', 'Flamboyant', 'Flashy', 'Flickering', 'Fluffy', 'Foolish',
-      'Forceful', 'Forgiving', 'Frantic', 'Friendly', 'Frightening', 'Frolicsome', 'Funky',
-      'Funny', 'Gallant', 'Glamorous', 'Gleeful', 'Goofy', 'Graceful', 'Grim', 'Groovy',
-      'Gregarious', 'Grotesque', 'Grumpy', 'Handsome', 'Happy-go-lucky', 'Hardcore',
-      'Hilarious', 'Honest', 'Hopeful', 'Humble', 'Humorous', 'Hungry', 'Hyperactive',
-      'Hypnotic', 'Illustrious', 'Imaginative', 'Impish', 'Incredible', 'Industrious',
-      'Infamous', 'Innocent', 'Insane', 'Inspiring', 'Intrepid', 'Ironic', 'Jaded',
-      'Jazzy', 'Jittery', 'Jolly', 'Jubilant', 'Juicy', 'Keen', 'Kindhearted', 'Kooky',
-      'Lively', 'Lofty', 'Lucky', 'Luminous', 'Lustrous', 'Magical', 'Majestic', 'Mellow',
-      'Mischievous', 'Mirthful', 'Mighty', 'Mirthful', 'Misty', 'Modern', 'Modest',
-      'Mighty', 'Mirthful', 'Misty', 'Modern', 'Modest', 'Mopey', 'Mysterious', 'Nimble',
-      'Nutty', 'Obsidian', 'Odd', 'Optimistic', 'Outrageous', 'Outstanding', 'Passionate',
-      'Peaceful', 'Perky', 'Playful', 'Pompous', 'Quaint', 'Quirky', 'Radiant', 'Rambunctious',
-      'Rascal', 'Reckless', 'Ridiculous', 'Rowdy', 'Rustic', 'Sage', 'Sassy', 'Savage',
-      'Scholarly', 'Scrappy', 'Scrumptious', 'Secluded', 'Serene', 'Shimmering', 'Silly',
-      'Sinister', 'Snappy', 'Snazzy', 'Sociable', 'Spirited', 'Spunky', 'Stellar', 'Stout',
-      'Strange', 'Stylish', 'Sunny', 'Superb', 'Swanky', 'Sweltering', 'Tactful', 'Talented',
-      'Tenacious', 'Terrific', 'Thrilling', 'Tidy', 'Trendy', 'Tricky', 'Turbulent',
-      'Unbelievable', 'Unique', 'Vibrant', 'Vigorous', 'Wacky', 'Warmhearted', 'Whimsical',
-      'Wild', 'Witty', 'Wonderful', 'Wondrous', 'Zany', 'Zealous', 'Zesty', 'Zippy'
-    ];
+    <!-- Start Screen -->
+    <div id="start-screen" class="container">
+        <h1>Referee Signal Charades</h1>
+        <button id="start-button">Start</button>
+    </div>
 
-    // Nouns Array
-    const nouns = [
-      // Original Nouns
-      'Dragons', 'Titans', 'Knights', 'Phoenixes', 'Wolves', 'Vipers', 'Gladiators',
-      'Spartans', 'Cyclones', 'Crusaders', 'Bumblebees', 'Unicorns', 'Pirates',
-      'Ninjas', 'Zombies', 'Aliens', 'Robots', 'Monkeys', 'Llamas', 'Sloths',
-      'Pandas', 'Yodelers', 'Mavericks', 'Warlocks', 'Goblins', 'Mermaids',
-      'Werewolves', 'Vikings', 'Samurais', 'Rockets', 'Avengers', 'Samurai', 'Ghosts',
-      'Clowns', 'Punks', 'Jesters', 'Wizards', 'Centaurs', 'Fairies', 'Giants',
-      'Minotaurs', 'Orcs', 'Sasquatches', 'Trolls', 'Vikings', 'Wombats', 'Yeti',
-      'Zombies', 'Cupcakes', 'Donuts', 'Pizzas', 'Tacos', 'Burritos', 'Sushi',
-      'Nachos', 'Cookies', 'Moose', 'Elephants', 'Giraffes', 'Hippos', 'Kangaroos',
-      'Raccoons', 'Snakes', 'Turtles', 'Eagles', 'Falcons', 'Hawks', 'Owls',
-      'Parrots', 'Peacocks', 'Swans', 'Flamingos', 'Dolphins', 'Sharks', 'Whales',
-      'Seals', 'Penguins', 'Lobsters', 'Crabs', 'Octopuses', 'Starfish', 'Jellyfish',
+    <!-- Game Screen -->
+    <div id="game-screen" class="container">
+        <img id="signal-image" src="" alt="Referee Signal">
+        <div id="timer">Time Left: <span id="time">60</span>s</div>
+        <input type="text" id="guess-input" placeholder="Enter your guess here...">
+        <button id="submit-guess">Submit Guess</button>
+        <div id="score">Score: 0</div>
 
-      // Additional Nouns
-      'Aardvarks', 'Antelopes', 'Apes', 'Armadillos', 'Badgers', 'Bats', 'Beavers',
-      'Bears', 'Bison', 'Boars', 'Buffaloes', 'Butterflies', 'Caimans', 'Camels',
-      'Cheetahs', 'Chickens', 'Chameleons', 'Cheetahs', 'Cobra', 'Cockroaches',
-      'Coyotes', 'Crocodiles', 'Deer', 'Dolphins', 'Donkeys', 'Doves', 'Eagles',
-      'Eels', 'Emus', 'Flamingos', 'Foxes', 'Frogs', 'Gazelles', 'Geckos', 'Giraffes',
-      'Goats', 'Goldfish', 'Gorillas', 'Grasshoppers', 'Guinea Pigs', 'Hamsters',
-      'Hedgehogs', 'Hippopotamuses', 'Hornets', 'Horses', 'Hummingbirds', 'Hyenas',
-      'Iguanas', 'Jaguars', 'Jellyfish', 'Kangaroos', 'Koalas', 'Komodos', 'Ladybugs',
-      'Lemurs', 'Leopards', 'Lions', 'Lizards', 'Llamas', 'Lobsters', 'Locusts',
-      'Magpies', 'Manatees', 'Meerkats', 'Moles', 'Mongoose', 'Monkeys', 'Moose',
-      'Moths', 'Mountain Lions', 'Mule', 'Narwhals', 'Newts', 'Ocelots', 'Octopuses',
-      'Orangutans', 'Ostriches', 'Otters', 'Owls', 'Oxen', 'Pandas', 'Panthers',
-      'Parrots', 'Peacocks', 'Pelicans', 'Penguins', 'Pheasants', 'Porcupines',
-      'Possums', 'Pumas', 'Quails', 'Rabbits', 'Raccoons', 'Rams', 'Rattlesnakes',
-      'Reindeer', 'Rhinoceroses', 'Salamanders', 'Salmons', 'Scorpions', 'Seahorses',
-      'Sharks', 'Sheep', 'Skunks', 'Sloths', 'Snakes', 'Snow Leopards', 'Sparrows',
-      'Spiders', 'Squirrels', 'Swans', 'Termites', 'Tigers', 'Toads', 'Turtles',
-      'Vultures', 'Wallabies', 'Walruses', 'Warthogs', 'Wasps', 'Weasels', 'Whales',
-      'Wildcats', 'Wolves', 'Wombats', 'Woodpeckers', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves',
-      'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves', 'Wolves'
-    ];
+        <!-- Leaderboard -->
+        <div id="leaderboard">
+            <h2>Leaderboard</h2>
+            <ul id="leaderboard-list">
+                <!-- Leaderboard entries will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
 
-    // Function to generate a random team name
-    function generateTeamName() {
-      const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-      const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      return `${adjective} ${noun}`;
-    }
+    <!-- Audio Elements -->
+    <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
+    <audio id="incorrect-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+    <audio id="tick-sound" src="https://www.soundjay.com/misc/sounds/tick-1.mp3" preload="auto"></audio>
+    <audio id="end-sound" src="https://www.soundjay.com/misc/sounds/failure-trumpet-01.mp3" preload="auto"></audio>
 
-    // Function to update the team name in the DOM
-    function updateTeamName() {
-      const teamNameElement = document.getElementById('team-name');
-      teamNameElement.textContent = generateTeamName();
-    }
+    <script>
+        // JavaScript Code for Referee Signal Charades with Pixel Art Characters
 
-    // Event listener for the Generate New Name button
-    document.getElementById('generate-btn').addEventListener('click', updateTeamName);
+        // Elements
+        const startButton = document.getElementById('start-button');
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const signalImage = document.getElementById('signal-image');
+        const timerElement = document.getElementById('time');
+        const guessInput = document.getElementById('guess-input');
+        const submitGuessButton = document.getElementById('submit-guess');
+        const scoreElement = document.getElementById('score');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const instructionsButton = document.getElementById('instructions-button');
+        const instructionsModal = document.getElementById('instructions-modal');
+        const closeModal = document.getElementsByClassName('close')[0];
 
-    // Function to handle sharing
-    function share(platform) {
-      const teamName = document.getElementById('team-name').textContent;
-      const text = encodeURIComponent(`Check out my fantasy football team name: ${teamName}!`);
-      let url = 'https://killytoronto.github.io/online-games/#';
+        // Audio Elements
+        const correctSound = document.getElementById('correct-sound');
+        const incorrectSound = document.getElementById('incorrect-sound');
+        const tickSound = document.getElementById('tick-sound');
+        const endSound = document.getElementById('end-sound');
 
-      switch(platform) {
-        case 'reddit':
-          url = `https://reddit.com/submit?title=${text}&url=${encodeURIComponent(window.location.href)}`;
-          break;
-        case 'twitter':
-          url = `https://twitter.com/intent/tweet?text=${text}`;
-          break;
-        case 'facebook':
-          url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${text}`;
-          break;
-        default:
-          return;
-      }
+        // Game Variables
+        const signals = [
+            { name: "Touchdown", image: "https://i.ibb.co/LJsvMpD/DALL-E-2024-10-07-18-09-41-A-pixel-art-of-an-NFL-referee-making-a-Touchdown-signal-with-both-ar.webp" },
+            { name: "Penalty", image: "https://i.ibb.co/2cbwZTy/DALL-E-2024-10-07-18-10-33-A-pixel-art-of-an-NFL-referee-making-a-Penalty-signal-with-one-arm-raised.webp" },
+            { name: "Timeout", image: "https://i.ibb.co/sCmSb6P/DALL-E-2024-10-07-18-12-42-A-pixel-art-of-an-NFL-referee-making-a-Timeout-signal-with-both-hands-for.webp" },
+            { name: "First Down", image: "https://i.ibb.co/ySPTw8Y/DALL-E-2024-10-07-18-15-34-A-pixel-art-of-an-NFL-referee-making-a-First-Down-signal-matching-the-sty.webp" },
+            { name: "Interception", image: "https://i.ibb.co/0Kmf1yw/DALL-E-2024-10-07-18-17-33-A-pixel-art-of-an-NFL-referee-making-an-Interception-signal-matching-the.webp" },
+            { name: "Fumble", image: "https://i.ibb.co/Y3tPnV9/DALL-E-2024-10-07-18-20-39-A-pixel-art-of-an-NFL-referee-signaling-possession-change-after-a-fumble.webp" },
+            { name: "Safety", image: "https://i.ibb.co/FXj213J/DALL-E-2024-10-07-18-26-51-A-pixel-art-of-an-NFL-referee-making-a-Safety-signal-with-both-arms-raise.webp" },
+            { name: "End of Quarter", image: "https://i.ibb.co/TLdQkCY/DALL-E-2024-10-07-18-29-36-A-pixel-art-of-an-NFL-referee-making-an-End-of-Quarter-signal-from-pre-19.webp" },
+            { name: "Illegal Horse Collar Tackle", image: "https://i.ibb.co/tJd0zGQ/DALL-E-2024-10-07-18-34-50-A-pixel-art-of-an-NFL-referee-making-the-Illegal-Horse-Collar-Tackle-sign.webp" },
+            { name: "Illegal Substitution", image: "https://i.ibb.co/16YP16g/DALL-E-2024-10-07-18-36-54-A-pixel-art-of-an-NFL-referee-making-the-Illegal-Substitution-signal-with.webp" }
+            // You can add more signals here if you have additional images
+        ];
 
-      window.open(url, 'https://killytoronto.github.io/online-games/#');
-    }
+        let currentSignal = {};
+        let timer;
+        let timeLeft = 60;
+        let score = 0;
 
-    // Initialize the first team name on page load
-    window.onload = updateTeamName;
-  </script>
+        // Initialize Leaderboard
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+        // Functions
+
+        /**
+         * Show Instructions Modal
+         */
+        function showModal() {
+            instructionsModal.style.display = "block";
+        }
+
+        /**
+         * Close Instructions Modal
+         */
+        function closeModalFunction() {
+            instructionsModal.style.display = "none";
+        }
+
+        /**
+         * Shuffle Signals Array using Fisher-Yates Algorithm
+         * @param {Array} array 
+         * @returns {Array} Shuffled Array
+         */
+        function shuffleSignals(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        /**
+         * Start the Game
+         */
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            shuffleSignals(signals);
+            loadNextSignal();
+            startTimer();
+        }
+
+        /**
+         * Load the Next Referee Signal
+         */
+        function loadNextSignal() {
+            // Clear any existing timer to prevent multiple timers running simultaneously
+            clearInterval(timer);
+            // Reset timeLeft to 60 seconds for each new signal
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            // Start the timer
+            startTimer();
+
+            if (signals.length === 0) {
+                endGame();
+                return;
+            }
+            currentSignal = signals.shift();
+            signalImage.src = currentSignal.image;
+            signalImage.alt = currentSignal.name;
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        /**
+         * Start the Countdown Timer
+         */
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                if (timeLeft <= 10 && timeLeft > 0) {
+                    tickSound.play();
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert(`Time's up! The correct answer was: "${currentSignal.name}".`);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        /**
+         * End the Game and Handle Scoring
+         */
+        function endGame() {
+            clearInterval(timer); // Ensure timer is cleared
+            endSound.play();
+            alert(`Time's up! Your final score is ${score}.`);
+            saveScore();
+            resetGame();
+        }
+
+        /**
+         * Save the Player's Score to the Leaderboard
+         */
+        function saveScore() {
+            const playerName = prompt("Enter your name for the leaderboard:", "Player");
+            if (playerName) {
+                leaderboard.push({ name: playerName, score: score });
+                leaderboard.sort((a, b) => b.score - a.score);
+                if (leaderboard.length > 10) {
+                    leaderboard.pop();
+                }
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                displayLeaderboard();
+            }
+        }
+
+        /**
+         * Display the Leaderboard
+         */
+        function displayLeaderboard() {
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach(entry => {
+                const li = document.createElement('li');
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = entry.name;
+                const scoreSpan = document.createElement('span');
+                scoreSpan.textContent = entry.score;
+                li.appendChild(nameSpan);
+                li.appendChild(scoreSpan);
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        /**
+         * Reset the Game for a New Session
+         */
+        function resetGame() {
+            clearInterval(timer);
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            score = 0;
+            scoreElement.textContent = `Score: ${score}`;
+            // Optionally, reshuffle and reuse signals if desired
+            // shuffleSignals(signals);
+            // loadNextSignal();
+            // startTimer();
+            // For now, end the game and show the start screen again
+            startScreen.style.display = 'flex';
+            gameScreen.style.display = 'none';
+        }
+
+        /**
+         * Handle the Submission of a Guess
+         */
+        function submitGuess() {
+            const guess = guessInput.value.trim().toLowerCase();
+            const correct = currentSignal.name.toLowerCase();
+
+            // Clear the timer as the user has made a guess
+            clearInterval(timer);
+
+            if (guess === correct) {
+                correctSound.play();
+                score += 10;
+                scoreElement.textContent = `Score: ${score}`;
+                loadNextSignal();
+            } else {
+                incorrectSound.play();
+                // Show the correct answer before moving to the next signal
+                alert(`Incorrect guess! The correct answer was: "${currentSignal.name}".`);
+                loadNextSignal();
+            }
+        }
+
+        /**
+         * Event Listener for Start Button
+         */
+        startButton.addEventListener('click', startGame);
+
+        /**
+         * Event Listener for Submit Guess Button
+         */
+        submitGuessButton.addEventListener('click', submitGuess);
+
+        /**
+         * Event Listener for Enter Key in Guess Input
+         */
+        guessInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                submitGuess();
+            }
+        });
+
+        /**
+         * Event Listener for Instructions Button
+         */
+        instructionsButton.addEventListener('click', showModal);
+
+        /**
+         * Event Listener for Closing the Modal
+         */
+        closeModal.addEventListener('click', closeModalFunction);
+
+        /**
+         * Event Listener for Clicking Outside the Modal to Close
+         */
+        window.addEventListener('click', function(event) {
+            if (event.target == instructionsModal) {
+                closeModalFunction();
+            }
+        });
+
+        /**
+         * Display Leaderboard on Page Load
+         */
+        window.onload = function() {
+            displayLeaderboard();
+        };
+    </script>
 </body>
 </html>
