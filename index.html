@@ -2,408 +2,321 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referee Signal Charades</title>
+    <title>Food Truck Tycoon</title>
     <style>
-        /* Reset and Basic Styles */
-        * {
+        body {
+            background-color: #111;
+            color: #0f0;
+            font-family: monospace;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Press Start 2P', cursive; /* Pixelated Font for 90s Aesthetic */
-            background-color: #1e1e1e;
-            color: #fff;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
             overflow: hidden;
         }
-
-        /* Container */
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        /* Start Screen */
-        #start-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        #start-screen h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #4CAF50;
-            text-shadow: 2px 2px #000;
-        }
-
-        #start-button {
-            padding: 15px 30px;
-            font-size: 1em;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px #999;
-        }
-
-        #start-button:hover {
-            background-color: #45a049;
-        }
-
-        #start-button:active {
-            background-color: #45a049;
-            box-shadow: 0 2px #666;
-            transform: translateY(2px);
-        }
-
-        /* Game Screen */
-        #game-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
+        header {
             width: 100%;
-        }
-
-        #signal-image {
-            width: 80%;
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 20px;
-            border: 5px solid #4CAF50;
-            border-radius: 10px;
-            image-rendering: pixelated; /* Maintain Pixel Art Quality */
-        }
-
-        #timer {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: #FF5722;
-        }
-
-        #guess-input {
-            padding: 10px;
-            font-size: 1em;
-            width: 80%;
-            max-width: 300px;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            outline: none;
-            background-color: #333;
-            color: #fff;
-        }
-
-        #submit-guess {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #2196F3;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px #999;
-        }
-
-        #submit-guess:hover {
-            background-color: #0b7dda;
-        }
-
-        #submit-guess:active {
-            background-color: #0b7dda;
-            box-shadow: 0 2px #666;
-            transform: translateY(2px);
-        }
-
-        #score {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #FFC107;
-        }
-
-        /* Leaderboard */
-        #leaderboard {
-            margin-top: 30px;
-            width: 100%;
-            max-width: 400px;
-            background-color: #2c2c2c;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #000;
-        }
-
-        #leaderboard h2 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #FF9800;
-            text-shadow: 1px 1px #000;
-        }
-
-        #leaderboard-list {
-            list-style: none;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 0 10px;
-        }
-
-        #leaderboard-list li {
-            background-color: #333;
-            margin-bottom: 5px;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.8em;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            box-shadow: inset 0 0 5px #000;
-        }
-
-        /* Modal */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 2; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.8); 
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #2c2c2c;
-            margin: 5% auto; 
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%; 
-            max-width: 500px;
-            border-radius: 10px;
-            position: relative;
-            box-shadow: 0 0 20px #000;
-        }
-
-        .close {
-            color: #aaa;
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            font-size: 2em;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #fff;
-            text-decoration: none;
-        }
-
-        /* Instructions Button */
-        #instructions-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #FF9800;
-            border: none;
             padding: 10px;
-            border-radius: 50%;
-            font-size: 1.2em;
-            color: #fff;
+            box-sizing: border-box;
+            background-color: #222;
+        }
+        #news {
+            width: 50%;
+            height: 50px;
+            overflow: hidden;
+            font-size: 14px;
+        }
+        #news-ticker {
+            white-space: nowrap;
+            animation: scroll-left 20s linear infinite;
+        }
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        #game-time {
+            width: 150px;
+            text-align: center;
+        }
+        #game-container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .section {
+            border: 1px solid #0f0;
+            padding: 10px;
+            margin: 5px;
+            flex: 1;
+            box-sizing: border-box;
+            overflow: auto;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        button {
+            background-color: #0f0;
+            color: #111;
+            border: none;
+            padding: 5px 10px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px #999;
+            margin-top: 5px;
+            font-family: monospace;
         }
-
-        #instructions-button:hover {
-            background-color: #e68900;
+        button:hover {
+            background-color: #fff;
+            color: #111;
         }
-
-        #instructions-button:active {
-            background-color: #e68900;
-            box-shadow: 0 2px #666;
-            transform: translateY(2px);
+        .ingredient, .action-button, .equipment {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
         }
-
+        #actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .area-button, .action-button, .equipment-button {
+            width: 100%;
+            margin-bottom: 5px;
+        }
         /* Responsive Design */
-        @media (max-width: 600px) {
-            #signal-image {
-                width: 90%;
+        @media (max-width: 800px) {
+            #game-container {
+                flex-direction: column;
             }
-
-            #guess-input, #submit-guess {
-                width: 90%;
+            .section {
+                width: 100%;
+                height: auto;
             }
-
-            #leaderboard {
-                max-width: 90%;
+            #news {
+                width: 100%;
+                height: 50px;
             }
-        }
-
-        /* Additional Styling for Pixel Art Feel */
-        body, button, input {
-            font-family: 'Press Start 2P', cursive;
-        }
-
-        /* Scrollbar Styling */
-        #leaderboard-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #leaderboard-list::-webkit-scrollbar-track {
-            background: #444;
-            border-radius: 10px;
-        }
-
-        #leaderboard-list::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-
-        #leaderboard-list::-webkit-scrollbar-thumb:hover {
-            background: #555;
         }
     </style>
-    <!-- Google Fonts for Pixelated Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header>
+        <!-- Events Ticker in Top-Left Corner -->
+        <div id="news">
+            <div id="news-ticker"></div>
+        </div>
+        <!-- Game Time Display in Top-Right Corner -->
+        <div id="game-time">
+            <h2>Game Time</h2>
+            <div id="current-time">08:00 AM</div>
+        </div>
+    </header>
 
-    <!-- Instructions Modal -->
-    <div id="instructions-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>How to Play</h2>
-            <p>
-                Welcome to Referee Signal Charades! Here's how to play:
-            </p>
-            <ol>
-                <li>Click the "Start" button to begin the game.</li>
-                <li>A random NFL referee signal will be displayed as a pixel art character.</li>
-                <li>Act out the signal for your friends to guess within the time limit.</li>
-                <li>Friends enter their guesses into the input field.</li>
-                <li>Points are awarded for correct guesses.</li>
-                <li>Try to achieve the highest score possible!</li>
-            </ol>
-            <p>Good luck and have fun!</p>
+    <div id="game-container">
+        <!-- ASCII City Map -->
+        <div id="city-map" class="section">
+            <h2>City Map</h2>
+            <pre id="map">
++-------------------------------+
+|         Downtown Area         |
+|   CCCCCCCCCCCCCCCCCCCCCCCCC   |
+|   C                           C   |
+|   C           T               C   |
+|   C                           C   |
+|   CCCCCCCCCCCCCCCCCCCCCCCCC   |
+|                               |
+|         Park Area             |
+|   PPPPPPPPPPPPPPPPPPPPPPPPPPP  |
+|   P                           P  |
+|   P                           P  |
+|   P           .               P  |
+|   P                           P  |
+|   PPPPPPPPPPPPPPPPPPPPPPPPPPP  |
+|                               |
+|      Residential Area         |
+|   RRRRRRRRRRRRRRRRRRRRRRRRRR  |
+|   R                           R  |
+|   R           .               R  |
+|   R                           R  |
+|   RRRRRRRRRRRRRRRRRRRRRRRRRR  |
++-------------------------------+
+Legend:
+C - Downtown Customers
+P - Park Customers
+R - Residential Customers
+T - Your Food Truck
+. - Streets
+            </pre>
+            <div>Current Location: <span id="current-location">Downtown</span></div>
+            <!-- Customer Rate Display -->
+            <div style="margin-top: 10px;">
+                <strong>Customer Rates:</strong><br>
+                Downtown: <span id="rate-downtown">0.70</span><br>
+                Park: <span id="rate-park">0.50</span><br>
+                Residential: <span id="rate-residential">0.30</span>
+            </div>
+        </div>
+
+        <!-- Ingredient Management -->
+        <div id="management" class="section">
+            <h2>Ingredient Management</h2>
+            <div id="ingredients">
+                <div class="ingredient">
+                    <span>Buns: <span id="buns">20</span></span>
+                    <button onclick="buyIngredient('buns')">Buy (+10)</button>
+                </div>
+                <div class="ingredient">
+                    <span>Patties: <span id="patties">20</span></span>
+                    <button onclick="buyIngredient('patties')">Buy (+10)</button>
+                </div>
+                <div class="ingredient">
+                    <span>Cheese: <span id="cheese">15</span></span>
+                    <button onclick="buyIngredient('cheese')">Buy (+5)</button>
+                </div>
+                <div class="ingredient">
+                    <span>Lettuce: <span id="lettuce">10</span></span>
+                    <button onclick="buyIngredient('lettuce')">Buy (+5)</button>
+                </div>
+                <div class="ingredient">
+                    <span>Tomatoes: <span id="tomatoes">10</span></span>
+                    <button onclick="buyIngredient('tomatoes')">Buy (+5)</button>
+                </div>
+                <div class="ingredient">
+                    <span>Bacon: <span id="bacon">0</span></span>
+                    <button onclick="buyIngredient('bacon')">Buy (+5)</button>
+                </div>
+            </div>
+            <div>Money: $<span id="money">200</span></div>
+            <div>Truck Upgrades: <span id="upgrade-status">0</span></div>
+        </div>
+
+        <!-- Customer Queues -->
+        <div id="customers" class="section">
+            <h2>Customer Queue</h2>
+            <div id="queue">
+                No customers waiting.
+            </div>
+            <button onclick="serveCustomer()">Serve Customer</button>
+        </div>
+
+        <!-- Actions -->
+        <div id="actions" class="section">
+            <h2>Actions</h2>
+            <button class="area-button" onclick="moveTruck('Downtown')">Move to Downtown (-$10)</button>
+            <button class="area-button" onclick="moveTruck('Park')">Move to Park (-$10)</button>
+            <button class="area-button" onclick="moveTruck('Residential')">Move to Residential (-$10)</button>
+            <hr>
+            <button onclick="upgradeTruck()">Upgrade Truck (+$100)</button>
+            <div id="upgrade-status-display"></div>
+            <hr>
+            <!-- New Actions -->
+            <h3>Additional Actions</h3>
+            <button class="action-button" onclick="advertise()">Advertise (+$50)</button>
+            <button class="action-button" onclick="buyEquipment()">Buy Equipment (+$150)</button>
+            <button class="action-button" onclick="hireStaff()">Hire Staff (+$200)</button>
         </div>
     </div>
-
-    <!-- Instructions Button -->
-    <button id="instructions-button">?</button>
-
-    <!-- Start Screen -->
-    <div id="start-screen" class="container">
-        <h1>Referee Signal Charades</h1>
-        <button id="start-button">Start</button>
-    </div>
-
-    <!-- Game Screen -->
-    <div id="game-screen" class="container">
-        <img id="signal-image" src="" alt="Referee Signal">
-        <div id="timer">Time Left: <span id="time">60</span>s</div>
-        <input type="text" id="guess-input" placeholder="Enter your guess here...">
-        <button id="submit-guess">Submit Guess</button>
-        <div id="score">Score: 0</div>
-
-        <!-- Leaderboard -->
-        <div id="leaderboard">
-            <h2>Leaderboard</h2>
-            <ul id="leaderboard-list">
-                <!-- Leaderboard entries will be dynamically added here -->
-            </ul>
-        </div>
-    </div>
-
-    <!-- Audio Elements -->
-    <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
-    <audio id="incorrect-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-    <audio id="tick-sound" src="https://www.soundjay.com/misc/sounds/tick-1.mp3" preload="auto"></audio>
-    <audio id="end-sound" src="https://www.soundjay.com/misc/sounds/failure-trumpet-01.mp3" preload="auto"></audio>
 
     <script>
-        // JavaScript Code for Referee Signal Charades with Pixel Art Characters
+        // Game State
+        let state = {
+            money: 200,
+            ingredients: {
+                buns: 20,
+                patties: 20,
+                cheese: 15,
+                lettuce: 10,
+                tomatoes: 10,
+                bacon: 0
+            },
+            queue: [],
+            location: 'Downtown',
+            upgrades: 0,
+            newsEvents: [],
+            gameTime: {
+                hour: 8,
+                minute: 0,
+                day: 1
+            },
+            events: [],
+            customerSpawnTimeout: null,
+            isOpen: false, // Initialize isOpen
+            doubleEarnings: false,
+            advertisingActive: false,
+            equipmentUpgrades: 0,
+            staffHired: false
+        };
 
-        // Elements
-        const startButton = document.getElementById('start-button');
-        const startScreen = document.getElementById('start-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const signalImage = document.getElementById('signal-image');
-        const timerElement = document.getElementById('time');
-        const guessInput = document.getElementById('guess-input');
-        const submitGuessButton = document.getElementById('submit-guess');
-        const scoreElement = document.getElementById('score');
-        const leaderboardList = document.getElementById('leaderboard-list');
-        const instructionsButton = document.getElementById('instructions-button');
-        const instructionsModal = document.getElementById('instructions-modal');
-        const closeModal = document.getElementsByClassName('close')[0];
+        // Areas Configuration
+        const areas = {
+            'Downtown': { customerRate: 0.7, symbol: 'C' },
+            'Park': { customerRate: 0.5, symbol: 'P' },
+            'Residential': { customerRate: 0.3, symbol: 'R' }
+        };
 
-        // Audio Elements
-        const correctSound = document.getElementById('correct-sound');
-        const incorrectSound = document.getElementById('incorrect-sound');
-        const tickSound = document.getElementById('tick-sound');
-        const endSound = document.getElementById('end-sound');
+        // Recipes Configuration
+        const recipes = {
+            'Cheeseburger': { buns: 1, patties: 1, cheese: 2, lettuce: 1, tomatoes: 1 },
+            'Veggie Burger': { buns: 1, patties: 0, cheese: 1, lettuce: 2, tomatoes: 2 },
+            'Double Burger': { buns: 2, patties: 2, cheese: 1, lettuce: 1, tomatoes: 1 },
+            'Bacon Burger': { buns: 1, patties: 1, cheese: 1, lettuce: 1, tomatoes: 1, bacon: 1 }
+        };
 
-        // Game Variables
-        const signals = [
-            { name: "Touchdown", image: "https://i.ibb.co/LJsvMpD/DALL-E-2024-10-07-18-09-41-A-pixel-art-of-an-NFL-referee-making-a-Touchdown-signal-with-both-ar.webp" },
-            { name: "Penalty", image: "https://i.ibb.co/2cbwZTy/DALL-E-2024-10-07-18-10-33-A-pixel-art-of-an-NFL-referee-making-a-Penalty-signal-with-one-arm-raised.webp" },
-            { name: "Timeout", image: "https://i.ibb.co/sCmSb6P/DALL-E-2024-10-07-18-12-42-A-pixel-art-of-an-NFL-referee-making-a-Timeout-signal-with-both-hands-for.webp" },
-            { name: "First Down", image: "https://i.ibb.co/ySPTw8Y/DALL-E-2024-10-07-18-15-34-A-pixel-art-of-an-NFL-referee-making-a-First-Down-signal-matching-the-sty.webp" },
-            { name: "Interception", image: "https://i.ibb.co/0Kmf1yw/DALL-E-2024-10-07-18-17-33-A-pixel-art-of-an-NFL-referee-making-an-Interception-signal-matching-the.webp" },
-            { name: "Fumble", image: "https://i.ibb.co/Y3tPnV9/DALL-E-2024-10-07-18-20-39-A-pixel-art-of-an-NFL-referee-signaling-possession-change-after-a-fumble.webp" },
-            { name: "Safety", image: "https://i.ibb.co/FXj213J/DALL-E-2024-10-07-18-26-51-A-pixel-art-of-an-NFL-referee-making-a-Safety-signal-with-both-arms-raise.webp" },
-            { name: "End of Quarter", image: "https://i.ibb.co/TLdQkCY/DALL-E-2024-10-07-18-29-36-A-pixel-art-of-an-NFL-referee-making-an-End-of-Quarter-signal-from-pre-19.webp" },
-            { name: "Illegal Horse Collar Tackle", image: "https://i.ibb.co/tJd0zGQ/DALL-E-2024-10-07-18-34-50-A-pixel-art-of-an-NFL-referee-making-the-Illegal-Horse-Collar-Tackle-sign.webp" },
-            { name: "Illegal Substitution", image: "https://i.ibb.co/16YP16g/DALL-E-2024-10-07-18-36-54-A-pixel-art-of-an-NFL-referee-making-the-Illegal-Substitution-signal-with.webp" }
-            // You can add more signals here if you have additional images
+        // Prices Configuration
+        const prices = { 
+            buns: 5, 
+            patties: 7, 
+            cheese: 4, 
+            lettuce: 3,
+            tomatoes: 3,
+            bacon: 6
+        };
+        const quantities = { 
+            buns: 10, 
+            patties: 10, 
+            cheese: 5, 
+            lettuce: 5,
+            tomatoes: 5,
+            bacon: 5
+        };
+
+        // Predefined Events
+        const predefinedEvents = [
+            { message: "There's a party in Downtown! Increased customers!", type: 'increase', area: 'Downtown', value: 0.3 },
+            { message: "Rain in Park Area! Decreased customers.", type: 'decrease', area: 'Park', value: 0.2 },
+            { message: "Local festival in Residential Area! Boost in customers.", type: 'increase', area: 'Residential', value: 0.25 },
+            { message: "Health inspection passed! Bonus $50.", type: 'bonus', amount: 50 },
+            { message: "Supplies shortage! Ingredient prices increased.", type: 'priceIncrease' },
+            { message: "Discount Day! Prices lowered for customers.", type: 'priceDecrease' },
+            { message: "Celebrity spotted! Surge of customers.", type: 'increase', area: 'Downtown', value: 0.4 },
+            { message: "Power outage! Temporary closure.", type: 'closure' },
+            { message: "New competitor in Park Area! Decreased customers.", type: 'decrease', area: 'Park', value: 0.25 },
+            { message: "Holiday special! Earn double money today.", type: 'doubleEarnings' },
+            { message: "Street fair in Residential Area! Increased customers.", type: 'increase', area: 'Residential', value: 0.3 },
+            { message: "Food critic visit! Earn extra $100.", type: 'bonus', amount: 100 },
+            { message: "Ingredient sale! Prices reduced.", type: 'priceDecreaseAll' },
+            { message: "Equipment malfunction! Upgrade costs increased.", type: 'upgradeCostIncrease' },
+            { message: "Local news feature! More customers.", type: 'increase', area: 'Downtown', value: 0.35 },
+            // New Events for Fines and Penalties
+            { message: "Overcrowded queue! Fine of $20 imposed.", type: 'fine', amount: 20 },
+            { message: "Failed to serve customer in time! Fine of $15 imposed.", type: 'fine', amount: 15 }
         ];
 
-        let currentSignal = {};
-        let timer;
-        let timeLeft = 60;
-        let score = 0;
+        // Initialize Events (shuffle for randomness)
+        state.events = shuffleArray(predefinedEvents.slice());
 
-        // Initialize Leaderboard
-        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-
-        // Functions
-
-        /**
-         * Show Instructions Modal
-         */
-        function showModal() {
-            instructionsModal.style.display = "block";
-        }
-
-        /**
-         * Close Instructions Modal
-         */
-        function closeModalFunction() {
-            instructionsModal.style.display = "none";
-        }
-
-        /**
-         * Shuffle Signals Array using Fisher-Yates Algorithm
-         * @param {Array} array 
-         * @returns {Array} Shuffled Array
-         */
-        function shuffleSignals(array) {
+        // Shuffle Helper Function
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
@@ -411,187 +324,431 @@
             return array;
         }
 
-        /**
-         * Start the Game
-         */
-        function startGame() {
-            startScreen.style.display = 'none';
-            gameScreen.style.display = 'flex';
-            shuffleSignals(signals);
-            loadNextSignal();
-            // Removed startTimer() from here to prevent multiple timers
+        // Update Display
+        function updateDisplay() {
+            document.getElementById('money').innerText = state.money;
+            document.getElementById('buns').innerText = state.ingredients.buns;
+            document.getElementById('patties').innerText = state.ingredients.patties;
+            document.getElementById('cheese').innerText = state.ingredients.cheese;
+            document.getElementById('lettuce').innerText = state.ingredients.lettuce;
+            document.getElementById('tomatoes').innerText = state.ingredients.tomatoes;
+            document.getElementById('bacon').innerText = state.ingredients.bacon;
+
+            document.getElementById('current-location').innerText = state.location;
+
+            // Update customer rates display
+            document.getElementById('rate-downtown').innerText = areas['Downtown'].customerRate.toFixed(2);
+            document.getElementById('rate-park').innerText = areas['Park'].customerRate.toFixed(2);
+            document.getElementById('rate-residential').innerText = areas['Residential'].customerRate.toFixed(2);
+
+            const queueDiv = document.getElementById('queue');
+            if (state.queue.length === 0) {
+                queueDiv.innerText = 'No customers waiting.';
+            } else {
+                queueDiv.innerHTML = state.queue.map((cust, index) => `Customer ${index + 1}: ${cust.order}`).join('<br>');
+            }
+
+            // Update Upgrade Status
+            document.getElementById('upgrade-status').innerText = state.upgrades;
+
+            // Update Equipment Upgrades Display (if any)
+            // Implement if equipment upgrades have visual effects
+
+            // Debugging: Log current customerRate
+            console.log(`Current Location: ${state.location}`);
+            console.log(`Customer Rate: ${areas[state.location].customerRate}`);
         }
 
-        /**
-         * Load the Next Referee Signal
-         */
-        function loadNextSignal() {
-            // Clear any existing timer to prevent multiple timers running simultaneously
-            clearInterval(timer);
-            // Reset timeLeft to 60 seconds for each new signal
-            timeLeft = 60;
-            timerElement.textContent = timeLeft;
-            // Start the timer
-            startTimer();
+        // Buy Ingredient
+        function buyIngredient(type) {
+            if (state.money >= prices[type]) {
+                state.money -= prices[type];
+                state.ingredients[type] += quantities[type];
+                updateDisplay();
+                // Add event message about ingredient purchase
+                state.newsEvents.push(`Purchased ${quantities[type]} ${type}.`);
+                updateNewsTicker();
+            } else {
+                alert('Not enough money!');
+            }
+        }
 
-            if (signals.length === 0) {
-                endGame();
+        // Serve Customer
+        function serveCustomer() {
+            if (state.queue.length === 0) {
+                alert('No customers to serve!');
                 return;
             }
-            currentSignal = signals.shift();
-            signalImage.src = currentSignal.image;
-            signalImage.alt = currentSignal.name;
-            guessInput.value = '';
-            guessInput.focus();
-        }
+            const customer = state.queue.shift();
+            const order = customer.order;
+            const recipe = recipes[order];
 
-        /**
-         * Start the Countdown Timer
-         */
-        function startTimer() {
-            timer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-                if (timeLeft <= 10 && timeLeft > 0) {
-                    tickSound.play();
-                }
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    alert(`Time's up! The correct answer was: "${currentSignal.name}".`);
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        /**
-         * End the Game and Handle Scoring
-         */
-        function endGame() {
-            clearInterval(timer); // Ensure timer is cleared
-            endSound.play();
-            alert(`Time's up! Your final score is ${score}.`);
-            saveScore();
-            resetGame();
-        }
-
-        /**
-         * Save the Player's Score to the Leaderboard
-         */
-        function saveScore() {
-            const playerName = prompt("Enter your name for the leaderboard:", "Player");
-            if (playerName) {
-                leaderboard.push({ name: playerName, score: score });
-                leaderboard.sort((a, b) => b.score - a.score);
-                if (leaderboard.length > 10) {
-                    leaderboard.pop();
-                }
-                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-                displayLeaderboard();
+            // Check if ingredients exist in the recipe
+            if (!recipe) {
+                alert('Unknown order!');
+                updateDisplay();
+                return;
             }
-        }
 
-        /**
-         * Display the Leaderboard
-         */
-        function displayLeaderboard() {
-            leaderboardList.innerHTML = '';
-            leaderboard.forEach(entry => {
-                const li = document.createElement('li');
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = entry.name;
-                const scoreSpan = document.createElement('span');
-                scoreSpan.textContent = entry.score;
-                li.appendChild(nameSpan);
-                li.appendChild(scoreSpan);
-                leaderboardList.appendChild(li);
-            });
-        }
+            // Check ingredients
+            let canServe = true;
+            for (let item in recipe) {
+                if (state.ingredients[item] === undefined || state.ingredients[item] < recipe[item]) {
+                    canServe = false;
+                    break;
+                }
+            }
 
-        /**
-         * Reset the Game for a New Session
-         */
-        function resetGame() {
-            clearInterval(timer);
-            timeLeft = 60;
-            timerElement.textContent = timeLeft;
-            score = 0;
-            scoreElement.textContent = `Score: ${score}`;
-            // Optionally, reshuffle and reuse signals if desired
-            // shuffleSignals(signals);
-            // loadNextSignal();
-            // startTimer();
-            // For now, end the game and show the start screen again
-            startScreen.style.display = 'flex';
-            gameScreen.style.display = 'none';
-        }
-
-        /**
-         * Handle the Submission of a Guess
-         */
-        function submitGuess() {
-            const guess = guessInput.value.trim().toLowerCase();
-            const correct = currentSignal.name.toLowerCase();
-
-            // Clear the timer as the user has made a guess
-            clearInterval(timer);
-
-            if (guess === correct) {
-                correctSound.play();
-                score += 10;
-                scoreElement.textContent = `Score: ${score}`;
-                loadNextSignal();
+            if (canServe) {
+                // Deduct ingredients
+                for (let item in recipe) {
+                    state.ingredients[item] -= recipe[item];
+                }
+                // Calculate earnings
+                let earnings = 10 + state.upgrades * 2;
+                if (state.doubleEarnings) {
+                    earnings *= 2;
+                }
+                state.money += earnings;
+                alert(`Served a ${order}! Earned $${earnings}.`);
             } else {
-                incorrectSound.play();
-                // Show the correct answer before moving to the next signal
-                alert(`Incorrect guess! The correct answer was: "${currentSignal.name}".`);
-                loadNextSignal();
+                // Fine for failing to serve due to insufficient ingredients
+                const fineAmount = 15;
+                state.money -= fineAmount;
+                state.newsEvents.push(`Failed to serve ${order}. Fine of $${fineAmount} imposed.`);
+                alert(`Not enough ingredients to serve ${order}! Fine of $${fineAmount} imposed.`);
+            }
+
+            updateNewsTicker();
+            updateDisplay();
+        }
+
+        // Move Truck
+        function moveTruck(newLocation) {
+            if (state.location === newLocation) {
+                alert(`You are already in ${newLocation}.`);
+                return;
+            }
+
+            const moveCost = 10;
+            if (state.money < moveCost) {
+                alert('Not enough money to move the truck!');
+                return;
+            }
+
+            state.money -= moveCost;
+
+            state.location = newLocation;
+            // Clear customer queue when moving
+            state.queue = [];
+            alert(`Moved to ${newLocation} area. $${moveCost} deducted for moving. Customer queue cleared.`);
+
+            // Add at least 5 customers based on the area's customerRate
+            const baseCustomers = 5;
+            for (let i = 0; i < baseCustomers; i++) {
+                const orderTypes = Object.keys(recipes);
+                const newOrder = orderTypes[Math.floor(Math.random() * orderTypes.length)];
+                state.queue.push({ order: newOrder });
+            }
+
+            // Add event message about moving and customer arrival
+            state.newsEvents.push(`Moved to ${newLocation}. ${baseCustomers} customers are waiting!`);
+
+            // Check for overcrowded queue
+            if (state.queue.length > 10) { // Arbitrary threshold for overcrowding
+                const overcrowdFine = 20;
+                state.money -= overcrowdFine;
+                state.newsEvents.push(`Overcrowded queue! Fine of $${overcrowdFine} imposed.`);
+            }
+
+            updateNewsTicker();
+            updateDisplay();
+        }
+
+        // Upgrade Truck
+        function upgradeTruck() {
+            const upgradeCost = 100 + (state.upgrades * 20); // Increasing cost with each upgrade
+            if (state.money >= upgradeCost) {
+                state.money -= upgradeCost;
+                state.upgrades += 1;
+                alert(`Truck upgraded! Current upgrades: ${state.upgrades}`);
+                state.newsEvents.push(`Truck upgraded to level ${state.upgrades}. Earnings increased.`);
+                updateNewsTicker();
+                updateDisplay();
+            } else {
+                alert('Not enough money to upgrade!');
             }
         }
 
-        /**
-         * Event Listener for Start Button
-         */
-        startButton.addEventListener('click', startGame);
+        // Additional Actions
 
-        /**
-         * Event Listener for Submit Guess Button
-         */
-        submitGuessButton.addEventListener('click', submitGuess);
-
-        /**
-         * Event Listener for Enter Key in Guess Input
-         */
-        guessInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                submitGuess();
+        // Advertise to increase customer rate temporarily
+        function advertise() {
+            const adCost = 50;
+            if (state.money < adCost) {
+                alert('Not enough money to advertise!');
+                return;
             }
-        });
+            state.money -= adCost;
+            const boostAmount = 0.2;
+            areas[state.location].customerRate += boostAmount;
+            state.advertisingActive = true;
+            state.newsEvents.push(`Advertised in ${state.location}. Customer rate increased by ${boostAmount}.`);
 
-        /**
-         * Event Listener for Instructions Button
-         */
-        instructionsButton.addEventListener('click', showModal);
+            // Remove the advertising boost after 1 in-game hour
+            setTimeout(() => {
+                areas[state.location].customerRate -= boostAmount;
+                state.advertisingActive = false;
+                state.newsEvents.push(`Advertising campaign ended in ${state.location}. Customer rate reverted.`);
+                updateNewsTicker();
+                updateDisplay();
+            }, 30000); // 30 seconds real time = 1 in-game hour
 
-        /**
-         * Event Listener for Closing the Modal
-         */
-        closeModal.addEventListener('click', closeModalFunction);
+            updateNewsTicker();
+            updateDisplay();
+        }
 
-        /**
-         * Event Listener for Clicking Outside the Modal to Close
-         */
-        window.addEventListener('click', function(event) {
-            if (event.target == instructionsModal) {
-                closeModalFunction();
+        // Buy Equipment to reduce ingredient consumption
+        function buyEquipment() {
+            const equipmentCost = 150;
+            if (state.money < equipmentCost) {
+                alert('Not enough money to buy equipment!');
+                return;
             }
-        });
+            state.money -= equipmentCost;
+            state.equipmentUpgrades += 1;
+            state.newsEvents.push(`Purchased equipment upgrade. Ingredient consumption reduced by 10%.`);
+            updateNewsTicker();
+            updateDisplay();
+        }
 
-        /**
-         * Display Leaderboard on Page Load
-         */
-        window.onload = function() {
-            displayLeaderboard();
-        };
+        // Hire Staff to automate serving and reduce fines
+        function hireStaff() {
+            const staffCost = 200;
+            if (state.money < staffCost) {
+                alert('Not enough money to hire staff!');
+                return;
+            }
+            state.money -= staffCost;
+            state.staffHired = true;
+            state.newsEvents.push(`Hired staff. Serving customers is now automated. Fines reduced by 50%.`);
+            updateNewsTicker();
+            updateDisplay();
+        }
+
+        // Initialize
+        updateDisplay();
+        checkOpenHours(); // Ensure isOpen is set correctly at start
+
+        // Game Time Management
+        function updateGameTime() {
+            state.gameTime.minute += 30; // Each interval represents 30 real seconds = 1 in-game hour
+            if (state.gameTime.minute >= 60) {
+                state.gameTime.minute -= 60;
+                state.gameTime.hour += 1;
+            }
+            if (state.gameTime.hour >= 24) {
+                state.gameTime.hour -= 24;
+                state.gameTime.day += 1;
+                // Reset events for the new day
+                state.events = shuffleArray(predefinedEvents.slice());
+            }
+            displayGameTime();
+            checkOpenHours();
+            triggerEvents();
+        }
+
+        // Display Game Time with Minutes
+        function displayGameTime() {
+            let hour = state.gameTime.hour;
+            let minute = state.gameTime.minute;
+            let period = 'AM';
+            if (hour >= 12) {
+                period = 'PM';
+                if (hour > 12) hour -= 12;
+            }
+            if (hour === 0) {
+                hour = 12;
+            }
+            let minuteStr = minute.toString().padStart(2, '0');
+            document.getElementById('current-time').innerText = `${hour}:${minuteStr} ${period}`;
+        }
+
+        // Check if within operating hours
+        function checkOpenHours() {
+            const currentHour = state.gameTime.hour;
+            if (currentHour >= 8 && currentHour <= 21) {
+                // Open
+                if (!state.isOpen) {
+                    state.isOpen = true;
+                    state.newsEvents.push('Your food truck is now OPEN for business!');
+                    updateNewsTicker();
+                    updateDisplay();
+                }
+            } else {
+                // Closed
+                if (state.isOpen) {
+                    state.isOpen = false;
+                    state.newsEvents.push('Your food truck is now CLOSED.');
+                    updateNewsTicker();
+                    updateDisplay();
+                }
+            }
+        }
+
+        // Trigger Events based on game time
+        function triggerEvents() {
+            // Assuming events are spread out over the game day
+            const eventChance = 0.2; // Increased chance to make game more dynamic
+            if (Math.random() < eventChance && state.events.length > 0) {
+                const event = state.events.pop();
+                handleEvent(event);
+            }
+        }
+
+        // Handle Events
+        function handleEvent(event) {
+            switch(event.type) {
+                case 'increase':
+                    if (areas[event.area]) { // Ensure area exists
+                        areas[event.area].customerRate += event.value;
+                        // Optional: Cap customerRate to 1.0 to prevent it from exceeding 100%
+                        areas[event.area].customerRate = Math.min(areas[event.area].customerRate, 1.0);
+                        state.newsEvents.push(event.message);
+                        console.log(`Event Triggered: ${event.message}`);
+                        console.log(`New customerRate for ${event.area}: ${areas[event.area].customerRate}`);
+                    }
+                    break;
+                case 'decrease':
+                    if (areas[event.area]) { // Ensure area exists
+                        // If staff is hired, reduce the decrease effect
+                        const decreaseValue = state.staffHired ? event.value * 0.5 : event.value;
+                        areas[event.area].customerRate = Math.max(areas[event.area].customerRate - decreaseValue, 0.1); // Minimum rate of 0.1
+                        state.newsEvents.push(event.message);
+                        console.log(`Event Triggered: ${event.message}`);
+                        console.log(`New customerRate for ${event.area}: ${areas[event.area].customerRate}`);
+                    }
+                    break;
+                case 'bonus':
+                    state.money += event.amount;
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'priceIncrease':
+                    for (let key in prices) {
+                        prices[key] += 1;
+                    }
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'priceDecrease':
+                    for (let key in prices) {
+                        prices[key] = Math.max(prices[key] - 1, 1);
+                    }
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'priceDecreaseAll':
+                    for (let key in prices) {
+                        prices[key] = Math.max(prices[key] - 2, 1);
+                    }
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'upgradeCostIncrease':
+                    // Example: future upgrades cost more
+                    // Implement as needed
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'closure':
+                    state.isOpen = false;
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    break;
+                case 'doubleEarnings':
+                    state.doubleEarnings = true;
+                    state.newsEvents.push(event.message);
+                    console.log(`Event Triggered: ${event.message}`);
+                    // Disable double earnings after 1 in-game day (30 real seconds * 24 = 720 seconds)
+                    setTimeout(() => { 
+                        state.doubleEarnings = false; 
+                        console.log('Double earnings event ended.');
+                        state.newsEvents.push('Double earnings event has ended.');
+                        updateNewsTicker();
+                        updateDisplay();
+                    }, 30000 * 24); // 720000 ms = 12 minutes real time
+                    break;
+                case 'fine':
+                    // If staff is hired, reduce the fine by 50%
+                    const fineAmount = state.staffHired ? event.amount * 0.5 : event.amount;
+                    state.money -= fineAmount;
+                    state.newsEvents.push(`Fine imposed: $${fineAmount}.`);
+                    console.log(`Event Triggered: Fine of $${fineAmount} imposed.`);
+                    break;
+                default:
+                    break;
+            }
+            updateNewsTicker();
+            updateDisplay(); // Update display after event
+        }
+
+        // Update News Ticker
+        function updateNewsTicker() {
+            const ticker = document.getElementById('news-ticker');
+            if (state.newsEvents.length > 0) {
+                ticker.innerText = state.newsEvents.join(' *** ');
+                // Clear events after displaying
+                state.newsEvents = [];
+            }
+        }
+
+        // Customer Spawning
+        function spawnCustomer() {
+            if (!state.isOpen) {
+                scheduleNextCustomer();
+                return;
+            }
+            const area = state.location;
+            let rate = areas[area].customerRate;
+            // If equipment upgrades reduce ingredient consumption, potentially influence customer satisfaction
+            // Implement as needed
+
+            const chance = Math.random();
+            console.log(`Attempting to spawn customer in ${area} with rate ${rate}`);
+            if (chance < rate) {
+                // Define possible orders
+                const orderTypes = Object.keys(recipes);
+                const newOrder = orderTypes[Math.floor(Math.random() * orderTypes.length)];
+                state.queue.push({ order: newOrder });
+                console.log(`Customer arrived: ${newOrder}`);
+
+                // Check for overcrowded queue
+                if (state.queue.length > 10) { // Arbitrary threshold for overcrowding
+                    const overcrowdFine = 20;
+                    state.money -= overcrowdFine;
+                    state.newsEvents.push(`Overcrowded queue! Fine of $${overcrowdFine} imposed.`);
+                }
+
+                updateNewsTicker();
+                updateDisplay();
+            }
+            scheduleNextCustomer();
+        }
+
+        // Schedule Next Customer Spawn
+        function scheduleNextCustomer() {
+            const interval = Math.floor(Math.random() * 10000) + 5000; // 5 to 15 seconds
+            state.customerSpawnTimeout = setTimeout(spawnCustomer, interval);
+            console.log(`Next customer spawn scheduled in ${interval / 1000} seconds.`);
+        }
+
+        // Start Customer Spawning
+        scheduleNextCustomer();
+
+        // Game Time Interval
+        setInterval(updateGameTime, 30000); // 30 seconds real time = 1 hour in game
     </script>
 </body>
 </html>
+
