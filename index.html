@@ -2,753 +2,793 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Food Truck Tycoon</title>
+    <title>Retro Maze</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            background-color: #111;
-            color: #0f0;
-            font-family: monospace;
+        /* General styles */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            /* Disable text selection and context menu */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #000, #333);
+            font-family: 'Courier New', Courier, monospace;
+            color: #0f0;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
-        header {
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #0f0;
+            background-color: #111;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
-            padding: 10px;
-            box-sizing: border-box;
-            background-color: #222;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 5;
         }
-        #news {
-            width: 50%;
-            height: 50px;
-            overflow: hidden;
-            font-size: 14px;
+
+        #hud div {
+            font-size: 18px;
         }
-        #news-ticker {
-            white-space: nowrap;
-            animation: scroll-left 20s linear infinite;
-        }
-        @keyframes scroll-left {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-        #game-time {
-            width: 150px;
-            text-align: center;
-        }
-        #game-container {
-            display: flex;
-            flex: 1;
+
+        /* Game field */
+        #game {
+            position: absolute;
+            top: 50px;
+            left: 0;
             width: 100%;
-            box-sizing: border-box;
+            height: calc(100% - 50px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 10px;
-            overflow: hidden;
-        }
-        .section {
-            border: 1px solid #0f0;
-            padding: 10px;
-            margin: 5px;
-            flex: 1;
-            box-sizing: border-box;
             overflow: auto;
         }
-        h2 {
-            text-align: center;
-            margin-top: 0;
+
+        #game pre {
+            white-space: pre;
+            line-height: 1em;
+            font-size: 16px;
         }
-        button {
-            background-color: #0f0;
-            color: #111;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin-top: 5px;
-            font-family: monospace;
-        }
-        button:hover {
-            background-color: #fff;
-            color: #111;
-        }
-        .ingredient, .action-button, .equipment {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-        #actions {
+
+        /* Modal windows */
+        #menu, #game-over, #pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            color: #0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            z-index: 10;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .area-button, .action-button, .equipment-button {
-            width: 100%;
-            margin-bottom: 5px;
+
+        #menu.visible, #game-over.visible, #pause-screen.visible {
+            visibility: visible;
         }
-        /* Responsive Design */
-        @media (max-width: 800px) {
-            #game-container {
-                flex-direction: column;
-            }
-            .section {
-                width: 100%;
-                height: auto;
-            }
-            #news {
-                width: 100%;
-                height: 50px;
-            }
+
+        button, .toggle-button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover, .toggle-button:hover {
+            background: #0c0;
+        }
+
+        #instructions {
+            max-width: 700px;
+            background-color: #222;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #0f0;
+            display: none;
+            text-align: left;
+        }
+
+        #instructions.visible {
+            display: block;
+        }
+
+        /* Game over screen */
+        #game-over h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+        }
+
+        #game-over p {
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        /* Advertisement buttons */
+        #extraLifeBtn, #rewardedAdBtn {
+            background: #FF4081;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 15px;
+            display: none; /* Initially hidden */
+            width: 220px;
+        }
+
+        #extraLifeBtn:hover, #rewardedAdBtn:hover {
+            background: #E91E63;
         }
     </style>
 </head>
 <body>
-    <header>
-        <!-- Events Ticker in Top-Left Corner -->
-        <div id="news">
-            <div id="news-ticker"></div>
-        </div>
-        <!-- Game Time Display in Top-Right Corner -->
-        <div id="game-time">
-            <h2>Game Time</h2>
-            <div id="current-time">08:00 AM</div>
-        </div>
-    </header>
-
     <div id="game-container">
-        <!-- ASCII City Map -->
-        <div id="city-map" class="section">
-            <h2>City Map</h2>
-            <pre id="map">
-+-------------------------------+
-|         Downtown Area         |
-|   CCCCCCCCCCCCCCCCCCCCCCCCC   |
-|   C                           C   |
-|   C           T               C   |
-|   C                           C   |
-|   CCCCCCCCCCCCCCCCCCCCCCCCC   |
-|                               |
-|         Park Area             |
-|   PPPPPPPPPPPPPPPPPPPPPPPPPPP  |
-|   P                           P  |
-|   P                           P  |
-|   P           .               P  |
-|   P                           P  |
-|   PPPPPPPPPPPPPPPPPPPPPPPPPPP  |
-|                               |
-|      Residential Area         |
-|   RRRRRRRRRRRRRRRRRRRRRRRRRR  |
-|   R                           R  |
-|   R           .               R  |
-|   R                           R  |
-|   RRRRRRRRRRRRRRRRRRRRRRRRRR  |
-+-------------------------------+
-Legend:
-C - Downtown Customers
-P - Park Customers
-R - Residential Customers
-T - Your Food Truck
-. - Streets
-            </pre>
-            <div>Current Location: <span id="current-location">Downtown</span></div>
-            <!-- Customer Rate Display -->
-            <div style="margin-top: 10px;">
-                <strong>Customer Rates:</strong><br>
-                Downtown: <span id="rate-downtown">0.70</span><br>
-                Park: <span id="rate-park">0.50</span><br>
-                Residential: <span id="rate-residential">0.30</span>
+        <!-- HUD -->
+        <div id="hud">
+            <div>Lives: <span id="lives">5</span></div>
+            <div>Score: <span id="score">0</span></div>
+            <div>Level: <span id="level">1</span></div>
+        </div>
+
+        <!-- Game field -->
+        <div id="game">
+            <pre></pre>
+        </div>
+
+        <!-- Menu -->
+        <div id="menu" class="visible">
+            <h1>Retro Maze</h1>
+            <button onclick="startGame()">Start Game</button>
+            <button class="toggle-button" onclick="toggleInstructions()">Instructions</button>
+            <div id="instructions">
+                <h2>How to Play:</h2>
+                <ul>
+                    <li>Use the arrow keys to move the player (@).</li>
+                    <li>Avoid enemies (E) that chase you.</li>
+                    <li>Find the exit (X) to advance to the next level.</li>
+                    <li>Each level becomes harder by increasing the number of enemies and their speed.</li>
+                    <li>You have 5 lives. The game ends if you lose all your lives.</li>
+                    <li>Press "Escape" to pause.</li>
+                </ul>
+                <button class="toggle-button" onclick="toggleInstructions()">Close</button>
             </div>
         </div>
 
-        <!-- Ingredient Management -->
-        <div id="management" class="section">
-            <h2>Ingredient Management</h2>
-            <div id="ingredients">
-                <div class="ingredient">
-                    <span>Buns: <span id="buns">20</span></span>
-                    <button onclick="buyIngredient('buns')">Buy (+10)</button>
-                </div>
-                <div class="ingredient">
-                    <span>Patties: <span id="patties">20</span></span>
-                    <button onclick="buyIngredient('patties')">Buy (+10)</button>
-                </div>
-                <div class="ingredient">
-                    <span>Cheese: <span id="cheese">15</span></span>
-                    <button onclick="buyIngredient('cheese')">Buy (+5)</button>
-                </div>
-                <div class="ingredient">
-                    <span>Lettuce: <span id="lettuce">10</span></span>
-                    <button onclick="buyIngredient('lettuce')">Buy (+5)</button>
-                </div>
-                <div class="ingredient">
-                    <span>Tomatoes: <span id="tomatoes">10</span></span>
-                    <button onclick="buyIngredient('tomatoes')">Buy (+5)</button>
-                </div>
-                <div class="ingredient">
-                    <span>Bacon: <span id="bacon">0</span></span>
-                    <button onclick="buyIngredient('bacon')">Buy (+5)</button>
-                </div>
-            </div>
-            <div>Money: $<span id="money">200</span></div>
-            <div>Truck Upgrades: <span id="upgrade-status">0</span></div>
+        <!-- Game over screen -->
+        <div id="game-over">
+            <h1>Game Over</h1>
+            <p>Your score: <span id="final-score"></span></p>
+            <button id="extraLifeBtn">Watch ad to get 1 life</button>
+            <button onclick="restartGame()">Play Again</button>
+            <button onclick="returnToMenu()">Return to Menu</button>
         </div>
 
-        <!-- Customer Queues -->
-        <div id="customers" class="section">
-            <h2>Customer Queue</h2>
-            <div id="queue">
-                No customers waiting.
-            </div>
-            <button onclick="serveCustomer()">Serve Customer</button>
-        </div>
-
-        <!-- Actions -->
-        <div id="actions" class="section">
-            <h2>Actions</h2>
-            <button class="area-button" onclick="moveTruck('Downtown')">Move to Downtown (-$10)</button>
-            <button class="area-button" onclick="moveTruck('Park')">Move to Park (-$10)</button>
-            <button class="area-button" onclick="moveTruck('Residential')">Move to Residential (-$10)</button>
-            <hr>
-            <button onclick="upgradeTruck()">Upgrade Truck (+$100)</button>
-            <div id="upgrade-status-display"></div>
-            <hr>
-            <!-- New Actions -->
-            <h3>Additional Actions</h3>
-            <button class="action-button" onclick="advertise()">Advertise (+$50)</button>
-            <button class="action-button" onclick="buyEquipment()">Buy Equipment (+$150)</button>
-            <button class="action-button" onclick="hireStaff()">Hire Staff (+$200)</button>
+        <!-- Pause screen -->
+        <div id="pause-screen">
+            <h1>Pause</h1>
+            <button onclick="resumeGame()">Resume</button>
+            <button onclick="returnToMenu()">Return to Menu</button>
         </div>
     </div>
 
     <script>
-        // Game State
-        let state = {
-            money: 200,
-            ingredients: {
-                buns: 20,
-                patties: 20,
-                cheese: 15,
-                lettuce: 10,
-                tomatoes: 10,
-                bacon: 0
-            },
-            queue: [],
-            location: 'Downtown',
-            upgrades: 0,
-            newsEvents: [],
-            gameTime: {
-                hour: 8,
-                minute: 0,
-                day: 1
-            },
-            events: [],
-            customerSpawnTimeout: null,
-            isOpen: false, // Initialize isOpen
-            doubleEarnings: false,
-            advertisingActive: false,
-            equipmentUpgrades: 0,
-            staffHired: false
+        // Disable context menu
+        window.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Disable text selection and scrolling
+        window.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Global variables
+        const gameContainer = document.getElementById('game-container');
+        const gameElement = document.getElementById('game').querySelector('pre');
+        const menuScreen = document.getElementById('menu');
+        const gameOverScreen = document.getElementById('game-over');
+        const pauseScreen = document.getElementById('pause-screen');
+        const hudElement = document.getElementById('hud');
+        const livesElement = document.getElementById('lives');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const finalScoreElement = document.getElementById('final-score');
+        const instructionsElement = document.getElementById('instructions');
+        const extraLifeBtn = document.getElementById('extraLifeBtn');
+
+        let gameInterval;
+        let gameRunning = false;
+        let gamePaused = false;
+
+        // Game settings
+        const config = {
+            width: 40,
+            height: 20,
+            playerChar: '@',
+            enemyChar: 'E',
+            wallChar: '#',
+            exitChar: 'X',
+            emptyChar: ' ',
+            initialLives: 5,
+            totalLevels: 20,
+            levels: [],
+            maxEnemiesPerLevel: 4
         };
 
-        // Areas Configuration
-        const areas = {
-            'Downtown': { customerRate: 0.7, symbol: 'C' },
-            'Park': { customerRate: 0.5, symbol: 'P' },
-            'Residential': { customerRate: 0.3, symbol: 'R' }
+        // Generate levels with increasing number of enemies
+        function generateLevels() {
+            config.levels = [];
+            for (let i = 0; i < config.totalLevels; i++) {
+                let enemyCount = Math.min(2 + Math.floor(i / 5), config.maxEnemiesPerLevel);
+                let enemySpeed = 0.8 + (i * 0.05) + (Math.random() * 0.2);
+                enemySpeed = Math.min(enemySpeed, 2);
+                config.levels.push({
+                    enemyCount: enemyCount,
+                    enemySpeed: enemySpeed
+                });
+            }
+        }
+
+        // Game variables
+        let gameArea = [];
+        let player = {};
+        let enemies = [];
+        let walls = [];
+        let exit = {};
+        let score = 0;
+        let lives = config.initialLives;
+        let currentLevel = 0;
+
+        // Initialize levels
+        generateLevels();
+
+        // Menu functions
+        function startGame() {
+            menuScreen.classList.remove('visible');
+            resetGame();
+            gameRunning = true;
+            gamePaused = false;
+            hudElement.style.visibility = 'visible';
+            gameElement.style.visibility = 'visible';
+            gameInterval = setInterval(updateGame, 100);
+        }
+
+        function pauseGame() {
+            if (gameRunning) {
+                gamePaused = true;
+                clearInterval(gameInterval);
+                pauseScreen.classList.add('visible');
+            }
+        }
+
+        function resumeGame() {
+            if (gameRunning && gamePaused) {
+                gamePaused = false;
+                pauseScreen.classList.remove('visible');
+                gameInterval = setInterval(updateGame, 100);
+            }
+        }
+
+        function returnToMenu() {
+            clearInterval(gameInterval);
+            resetGame(true);
+            gameRunning = false;
+            gamePaused = false;
+            pauseScreen.classList.remove('visible');
+            gameOverScreen.classList.remove('visible');
+            menuScreen.classList.add('visible');
+            hudElement.style.visibility = 'hidden';
+            gameElement.style.visibility = 'hidden';
+        }
+
+        // Function to restart the game with fullscreen ad
+        function restartGame() {
+            showFullscreenAd(() => {
+                gameOverScreen.classList.remove('visible');
+                resetGame();
+                gameRunning = true;
+                gamePaused = false;
+                hudElement.style.visibility = 'visible';
+                gameElement.style.visibility = 'visible';
+                gameInterval = setInterval(updateGame, 100);
+            });
+        }
+
+        // Toggle instructions visibility
+        function toggleInstructions() {
+            instructionsElement.classList.toggle('visible');
+        }
+
+        // Initialize game
+        function resetGame(skipLevelGeneration = false) {
+            score = 0;
+            lives = config.initialLives;
+            currentLevel = 0;
+            gameArea = [];
+            enemies = [];
+            walls = [];
+            if (!skipLevelGeneration) {
+                generateLevels();
+            }
+            generateMaze();
+            placePlayer();
+            placeExit();
+            generateEnemies();
+            updateHUD();
+            drawGame();
+        }
+
+        function updateHUD() {
+            livesElement.innerText = lives;
+            scoreElement.innerText = score;
+            levelElement.innerText = currentLevel + 1;
+        }
+
+        // Generate maze
+        function generateMaze() {
+            let width = config.width;
+            let height = config.height;
+
+            // Initialize grid
+            gameArea = [];
+            for (let y = 0; y < height; y++) {
+                let row = [];
+                for (let x = 0; x < width; x++) {
+                    row.push(config.wallChar);
+                }
+                gameArea.push(row);
+            }
+
+            // Initial coordinates
+            let startX = Math.floor(Math.random() * (Math.floor(width / 2))) * 2 + 1;
+            let startY = Math.floor(Math.random() * (Math.floor(height / 2))) * 2 + 1;
+
+            carveMaze(startX, startY);
+        }
+
+        function carveMaze(x, y) {
+            const directions = [
+                [0, -2],
+                [2, 0],
+                [0, 2],
+                [-2, 0]
+            ];
+
+            // Shuffle directions for randomness
+            directions.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < directions.length; i++) {
+                let dx = directions[i][0];
+                let dy = directions[i][1];
+                let nx = x + dx;
+                let ny = y + dy;
+
+                if (nx > 0 && nx < config.width - 1 && ny > 0 && ny < config.height - 1 && gameArea[ny][nx] === config.wallChar) {
+                    gameArea[Math.floor(ny - dy / 2)][Math.floor(nx - dx / 2)] = config.emptyChar;
+                    gameArea[ny][nx] = config.emptyChar;
+                    carveMaze(nx, ny);
+                }
+            }
+        }
+
+        // Get random empty position
+        function getRandomEmptyPosition() {
+            let emptyPositions = [];
+            for (let y = 1; y < config.height - 1; y++) {
+                for (let x = 1; x < config.width - 1; x++) {
+                    if (gameArea[y][x] === config.emptyChar && !(x === exit.x && y === exit.y)) {
+                        if (!enemies.some(e => e.x === x && e.y === y)) {
+                            emptyPositions.push({ x, y });
+                        }
+                    }
+                }
+            }
+
+            if (emptyPositions.length === 0) {
+                return { x: player.x, y: player.y };
+            }
+
+            let index = Math.floor(Math.random() * emptyPositions.length);
+            return emptyPositions[index];
+        }
+
+        // Place player
+        function placePlayer() {
+            player = getRandomEmptyPosition();
+        }
+
+        function placeExit() {
+            for (let y = config.height - 2; y > 0; y--) {
+                for (let x = config.width - 2; x > 0; x--) {
+                    if (gameArea[y][x] === config.emptyChar && !(x === player.x && y === player.y)) {
+                        exit = { x, y };
+                        gameArea[y][x] = config.exitChar;
+                        return;
+                    }
+                }
+            }
+        }
+
+        function generateEnemies() {
+            enemies = [];
+            let levelConfig = config.levels[currentLevel];
+            for (let i = 0; i < levelConfig.enemyCount; i++) {
+                let x, y;
+                let attempts = 0;
+                const maxAttempts = 100;
+                do {
+                    x = Math.floor(Math.random() * (config.width - 2)) + 1;
+                    y = Math.floor(Math.random() * (config.height - 2)) + 1;
+                    attempts++;
+                } while (
+                    (gameArea[y][x] !== config.emptyChar ||
+                    (x === player.x && y === player.y) ||
+                    (x === exit.x && y === exit.y) ||
+                    enemies.some(e => e.x === x && e.y === y)) && attempts < maxAttempts
+                );
+                if (attempts < maxAttempts) {
+                    enemies.push({ 
+                        x, 
+                        y, 
+                        speed: levelConfig.enemySpeed,
+                        moveCooldown: Math.floor(20 / levelConfig.enemySpeed)
+                    });
+                }
+            }
+        }
+
+        // Draw game
+        function drawGame() {
+            let output = '';
+            for (let y = 0; y < config.height; y++) {
+                for (let x = 0; x < config.width; x++) {
+                    if (x === player.x && y === player.y) {
+                        output += config.playerChar;
+                    } else if (enemies.some(e => e.x === x && e.y === y)) {
+                        output += config.enemyChar;
+                    } else if (x === exit.x && y === exit.y) {
+                        output += config.exitChar;
+                    } else {
+                        output += gameArea[y][x];
+                    }
+                }
+                output += '\n';
+            }
+            gameElement.textContent = output;
+        }
+
+        // Update game
+        function updateGame() {
+            moveEnemies();
+            checkCollisions();
+            drawGame();
+            updateHUD();
+            if (player.x === exit.x && player.y === exit.y) {
+                score += 100;
+                advanceLevel();
+            }
+        }
+
+        function moveEnemies() {
+            enemies.forEach(enemy => {
+                enemy.moveCooldown--;
+                if (enemy.moveCooldown <= 0) {
+                    if (Math.random() < 0.7) {
+                        let path = findPath(enemy.x, enemy.y, player.x, player.y);
+                        if (path && path.length > 1) {
+                            enemy.x = path[1][0];
+                            enemy.y = path[1][1];
+                        }
+                    } else {
+                        let directions = [
+                            { x: enemy.x - 1, y: enemy.y },
+                            { x: enemy.x + 1, y: enemy.y },
+                            { x: enemy.x, y: enemy.y - 1 },
+                            { x: enemy.x, y: enemy.y + 1 }
+                        ];
+                        directions = directions.filter(dir => 
+                            dir.x >= 0 && dir.x < config.width &&
+                            dir.y >= 0 && dir.y < config.height &&
+                            gameArea[dir.y][dir.x] !== config.wallChar
+                        );
+                        if (directions.length > 0) {
+                            let move = directions[Math.floor(Math.random() * directions.length)];
+                            if (!enemies.some(e => e.x === move.x && e.y === move.y) &&
+                                !(move.x === exit.x && move.y === exit.y)) {
+                                enemy.x = move.x;
+                                enemy.y = move.y;
+                            }
+                        }
+                    }
+                    enemy.moveCooldown = Math.floor(20 / enemy.speed);
+                }
+            });
+        }
+
+        // A* Pathfinding algorithm
+        function findPath(startX, startY, endX, endY) {
+            let openList = [];
+            let closedList = [];
+            let startNode = { x: startX, y: startY, g: 0, h: 0, f: 0, parent: null };
+            let endNode = { x: endX, y: endY };
+            openList.push(startNode);
+
+            while (openList.length > 0) {
+                let currentIndex = 0;
+                for (let i = 1; i < openList.length; i++) {
+                    if (openList[i].f < openList[currentIndex].f) {
+                        currentIndex = i;
+                    }
+                }
+                let currentNode = openList.splice(currentIndex, 1)[0];
+
+                if (currentNode.x === endNode.x && currentNode.y === endNode.y) {
+                    let path = [];
+                    let curr = currentNode;
+                    while (curr) {
+                        path.push([curr.x, curr.y]);
+                        curr = curr.parent;
+                    }
+                    return path.reverse();
+                }
+
+                closedList.push(currentNode);
+
+                let neighbors = [
+                    { x: currentNode.x - 1, y: currentNode.y },
+                    { x: currentNode.x + 1, y: currentNode.y },
+                    { x: currentNode.x, y: currentNode.y - 1 },
+                    { x: currentNode.x, y: currentNode.y + 1 },
+                ];
+
+                for (let neighbor of neighbors) {
+                    if (
+                        neighbor.x < 0 || neighbor.x >= config.width ||
+                        neighbor.y < 0 || neighbor.y >= config.height ||
+                        gameArea[neighbor.y][neighbor.x] === config.wallChar
+                    ) {
+                        continue;
+                    }
+
+                    if (closedList.some(node => node.x === neighbor.x && node.y === neighbor.y)) {
+                        continue;
+                    }
+
+                    let g = currentNode.g + 1;
+                    let h = Math.abs(neighbor.x - endNode.x) + Math.abs(neighbor.y - endNode.y);
+                    let f = g + h;
+
+                    let existingNode = openList.find(node => node.x === neighbor.x && node.y === neighbor.y);
+                    if (existingNode) {
+                        if (g < existingNode.g) {
+                            existingNode.g = g;
+                            existingNode.f = f;
+                            existingNode.parent = currentNode;
+                        }
+                    } else {
+                        openList.push({ x: neighbor.x, y: neighbor.y, g, h, f, parent: currentNode });
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Check collisions
+        function checkCollisions() {
+            for (let enemy of enemies) {
+                if (enemy.x === player.x && enemy.y === player.y) {
+                    lives--;
+                    updateLives();
+                    if (lives <= 0) {
+                        endGame();
+                        return;
+                    } else {
+                        placePlayer();
+                        drawGame();
+                    }
+                }
+            }
+        }
+
+        // Advance to next level
+        function advanceLevel() {
+            currentLevel++;
+            if (currentLevel >= config.totalLevels) {
+                endGame(true);
+                return;
+            }
+            generateMaze();
+            placePlayer();
+            placeExit();
+            generateEnemies();
+            updateHUD();
+            drawGame();
+        }
+
+        // End game
+        function endGame(victory = false) {
+            clearInterval(gameInterval);
+            gameRunning = false;
+            finalScoreElement.innerText = score + (victory ? " (Victory!)" : "");
+            gameOverScreen.querySelector('h1').innerText = victory ? "Congratulations! You completed all levels!" : "Game Over";
+            gameOverScreen.classList.add('visible');
+
+            if (!gameProgress.usedExtraLife) {
+                extraLifeBtn.style.display = 'block';
+            } else {
+                extraLifeBtn.style.display = 'none';
+            }
+        }
+
+        // Player controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning || gamePaused) return;
+            let dx = 0;
+            let dy = 0;
+            if (e.key === 'ArrowUp') dy = -1;
+            if (e.key === 'ArrowDown') dy = 1;
+            if (e.key === 'ArrowLeft') dx = -1;
+            if (e.key === 'ArrowRight') dx = 1;
+            if (e.key === 'Escape') {
+                pauseGame();
+                return;
+            }
+
+            let newX = player.x + dx;
+            let newY = player.y + dy;
+            if (
+                newX >= 0 && newX < config.width &&
+                newY >= 0 && newY < config.height &&
+                gameArea[newY][newX] !== config.wallChar
+            ) {
+                player.x = newX;
+                player.y = newY;
+                updateGame();
+            }
+            e.preventDefault();
+        });
+
+        // Update lives
+        function updateLives() {
+            livesElement.innerText = lives;
+        }
+
+        // Variable to track usage of extra life
+        const gameProgress = {
+            usedExtraLife: false
         };
 
-        // Recipes Configuration
-        const recipes = {
-            'Cheeseburger': { buns: 1, patties: 1, cheese: 2, lettuce: 1, tomatoes: 1 },
-            'Veggie Burger': { buns: 1, patties: 0, cheese: 1, lettuce: 2, tomatoes: 2 },
-            'Double Burger': { buns: 2, patties: 2, cheese: 1, lettuce: 1, tomatoes: 1 },
-            'Bacon Burger': { buns: 1, patties: 1, cheese: 1, lettuce: 1, tomatoes: 1, bacon: 1 }
-        };
+        // Function to show rewarded ad for extra life
+        function showExtraLifeAd() {
+            // Placeholder for ad functionality
+            // Implement your own ad provider here
 
-        // Prices Configuration
-        const prices = { 
-            buns: 5, 
-            patties: 7, 
-            cheese: 4, 
-            lettuce: 3,
-            tomatoes: 3,
-            bacon: 6
-        };
-        const quantities = { 
-            buns: 10, 
-            patties: 10, 
-            cheese: 5, 
-            lettuce: 5,
-            tomatoes: 5,
-            bacon: 5
-        };
-
-        // Predefined Events
-        const predefinedEvents = [
-            { message: "There's a party in Downtown! Increased customers!", type: 'increase', area: 'Downtown', value: 0.3 },
-            { message: "Rain in Park Area! Decreased customers.", type: 'decrease', area: 'Park', value: 0.2 },
-            { message: "Local festival in Residential Area! Boost in customers.", type: 'increase', area: 'Residential', value: 0.25 },
-            { message: "Health inspection passed! Bonus $50.", type: 'bonus', amount: 50 },
-            { message: "Supplies shortage! Ingredient prices increased.", type: 'priceIncrease' },
-            { message: "Discount Day! Prices lowered for customers.", type: 'priceDecrease' },
-            { message: "Celebrity spotted! Surge of customers.", type: 'increase', area: 'Downtown', value: 0.4 },
-            { message: "Power outage! Temporary closure.", type: 'closure' },
-            { message: "New competitor in Park Area! Decreased customers.", type: 'decrease', area: 'Park', value: 0.25 },
-            { message: "Holiday special! Earn double money today.", type: 'doubleEarnings' },
-            { message: "Street fair in Residential Area! Increased customers.", type: 'increase', area: 'Residential', value: 0.3 },
-            { message: "Food critic visit! Earn extra $100.", type: 'bonus', amount: 100 },
-            { message: "Ingredient sale! Prices reduced.", type: 'priceDecreaseAll' },
-            { message: "Equipment malfunction! Upgrade costs increased.", type: 'upgradeCostIncrease' },
-            { message: "Local news feature! More customers.", type: 'increase', area: 'Downtown', value: 0.35 },
-            // New Events for Fines and Penalties
-            { message: "Overcrowded queue! Fine of $20 imposed.", type: 'fine', amount: 20 },
-            { message: "Failed to serve customer in time! Fine of $15 imposed.", type: 'fine', amount: 15 }
-        ];
-
-        // Initialize Events (shuffle for randomness)
-        state.events = shuffleArray(predefinedEvents.slice());
-
-        // Shuffle Helper Function
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+            // For now, simply give the extra life without showing an ad
+            lives += 1;
+            updateLives();
+            gameOverScreen.classList.remove('visible');
+            gameRunning = true;
+            gameInterval = setInterval(updateGame, 100);
         }
 
-        // Update Display
-        function updateDisplay() {
-            document.getElementById('money').innerText = state.money;
-            document.getElementById('buns').innerText = state.ingredients.buns;
-            document.getElementById('patties').innerText = state.ingredients.patties;
-            document.getElementById('cheese').innerText = state.ingredients.cheese;
-            document.getElementById('lettuce').innerText = state.ingredients.lettuce;
-            document.getElementById('tomatoes').innerText = state.ingredients.tomatoes;
-            document.getElementById('bacon').innerText = state.ingredients.bacon;
+        // Extra life button handler
+        extraLifeBtn.addEventListener('click', () => {
+            gameProgress.usedExtraLife = true;
+            extraLifeBtn.style.display = 'none';
+            showExtraLifeAd();
+        });
 
-            document.getElementById('current-location').innerText = state.location;
+        // Save game progress
+        async function saveGameProgress() {
+            const progress = {
+                score,
+                lives,
+                currentLevel,
+                usedExtraLife: gameProgress.usedExtraLife
+            };
+            localStorage.setItem('gameProgress', JSON.stringify(progress));
 
-            // Update customer rates display
-            document.getElementById('rate-downtown').innerText = areas['Downtown'].customerRate.toFixed(2);
-            document.getElementById('rate-park').innerText = areas['Park'].customerRate.toFixed(2);
-            document.getElementById('rate-residential').innerText = areas['Residential'].customerRate.toFixed(2);
-
-            const queueDiv = document.getElementById('queue');
-            if (state.queue.length === 0) {
-                queueDiv.innerText = 'No customers waiting.';
-            } else {
-                queueDiv.innerHTML = state.queue.map((cust, index) => `Customer ${index + 1}: ${cust.order}`).join('<br>');
-            }
-
-            // Update Upgrade Status
-            document.getElementById('upgrade-status').innerText = state.upgrades;
-
-            // Update Equipment Upgrades Display (if any)
-            // Implement if equipment upgrades have visual effects
-
-            // Debugging: Log current customerRate
-            console.log(`Current Location: ${state.location}`);
-            console.log(`Customer Rate: ${areas[state.location].customerRate}`);
+            // Removed cloud saving functionality
         }
 
-        // Buy Ingredient
-        function buyIngredient(type) {
-            if (state.money >= prices[type]) {
-                state.money -= prices[type];
-                state.ingredients[type] += quantities[type];
-                updateDisplay();
-                // Add event message about ingredient purchase
-                state.newsEvents.push(`Purchased ${quantities[type]} ${type}.`);
-                updateNewsTicker();
-            } else {
-                alert('Not enough money!');
+        // Load game progress
+        async function loadGameProgress() {
+            let savedProgress = null;
+
+            // Removed cloud loading functionality
+
+            // Load from localStorage
+            const localData = localStorage.getItem('gameProgress');
+            if (localData) {
+                savedProgress = JSON.parse(localData);
+                console.log('Progress loaded from localStorage');
+            }
+
+            if (savedProgress) {
+                score = savedProgress.score;
+                lives = savedProgress.lives;
+                currentLevel = savedProgress.currentLevel;
+                gameProgress.usedExtraLife = savedProgress.usedExtraLife || false;
+                updateHUD();
+                drawGame();
             }
         }
 
-        // Serve Customer
-        function serveCustomer() {
-            if (state.queue.length === 0) {
-                alert('No customers to serve!');
-                return;
-            }
-            const customer = state.queue.shift();
-            const order = customer.order;
-            const recipe = recipes[order];
+        // Auto-save progress on page unload
+        window.addEventListener('beforeunload', saveGameProgress);
 
-            // Check if ingredients exist in the recipe
-            if (!recipe) {
-                alert('Unknown order!');
-                updateDisplay();
-                return;
-            }
+        // Initialize game without Yandex Games SDK
+        window.addEventListener('load', async () => {
+            // Start game without SDK
+            resetGame();
+            // Optionally, load game progress
+            await loadGameProgress();
+            // Remove ad functionalities related to Yandex
+            // Optionally, show your own banner ads here
+        });
 
-            // Check ingredients
-            let canServe = true;
-            for (let item in recipe) {
-                if (state.ingredients[item] === undefined || state.ingredients[item] < recipe[item]) {
-                    canServe = false;
-                    break;
-                }
-            }
-
-            if (canServe) {
-                // Deduct ingredients
-                for (let item in recipe) {
-                    state.ingredients[item] -= recipe[item];
-                }
-                // Calculate earnings
-                let earnings = 10 + state.upgrades * 2;
-                if (state.doubleEarnings) {
-                    earnings *= 2;
-                }
-                state.money += earnings;
-                alert(`Served a ${order}! Earned $${earnings}.`);
-            } else {
-                // Fine for failing to serve due to insufficient ingredients
-                const fineAmount = 15;
-                state.money -= fineAmount;
-                state.newsEvents.push(`Failed to serve ${order}. Fine of $${fineAmount} imposed.`);
-                alert(`Not enough ingredients to serve ${order}! Fine of $${fineAmount} imposed.`);
-            }
-
-            updateNewsTicker();
-            updateDisplay();
+        // Function to show sticky banner
+        function showStickyBanner() {
+            // Placeholder for banner ad functionality
+            // Implement your own ad provider here
         }
 
-        // Move Truck
-        function moveTruck(newLocation) {
-            if (state.location === newLocation) {
-                alert(`You are already in ${newLocation}.`);
-                return;
-            }
+        // Function to show fullscreen ad
+        function showFullscreenAd(callback) {
+            // Placeholder for fullscreen ad functionality
+            // Implement your own ad provider here
 
-            const moveCost = 10;
-            if (state.money < moveCost) {
-                alert('Not enough money to move the truck!');
-                return;
-            }
-
-            state.money -= moveCost;
-
-            state.location = newLocation;
-            // Clear customer queue when moving
-            state.queue = [];
-            alert(`Moved to ${newLocation} area. $${moveCost} deducted for moving. Customer queue cleared.`);
-
-            // Add at least 5 customers based on the area's customerRate
-            const baseCustomers = 5;
-            for (let i = 0; i < baseCustomers; i++) {
-                const orderTypes = Object.keys(recipes);
-                const newOrder = orderTypes[Math.floor(Math.random() * orderTypes.length)];
-                state.queue.push({ order: newOrder });
-            }
-
-            // Add event message about moving and customer arrival
-            state.newsEvents.push(`Moved to ${newLocation}. ${baseCustomers} customers are waiting!`);
-
-            // Check for overcrowded queue
-            if (state.queue.length > 10) { // Arbitrary threshold for overcrowding
-                const overcrowdFine = 20;
-                state.money -= overcrowdFine;
-                state.newsEvents.push(`Overcrowded queue! Fine of $${overcrowdFine} imposed.`);
-            }
-
-            updateNewsTicker();
-            updateDisplay();
+            // For now, simply call the callback immediately
+            if (callback) callback();
         }
 
-        // Upgrade Truck
-        function upgradeTruck() {
-            const upgradeCost = 100 + (state.upgrades * 20); // Increasing cost with each upgrade
-            if (state.money >= upgradeCost) {
-                state.money -= upgradeCost;
-                state.upgrades += 1;
-                alert(`Truck upgraded! Current upgrades: ${state.upgrades}`);
-                state.newsEvents.push(`Truck upgraded to level ${state.upgrades}. Earnings increased.`);
-                updateNewsTicker();
-                updateDisplay();
-            } else {
-                alert('Not enough money to upgrade!');
-            }
+        // Function to show rewarded video
+        function showRewardedAd(callback) {
+            // Placeholder for rewarded video ad functionality
+            // Implement your own ad provider here
+
+            // For now, simply call the callback immediately
+            if (callback) callback();
         }
-
-        // Additional Actions
-
-        // Advertise to increase customer rate temporarily
-        function advertise() {
-            const adCost = 50;
-            if (state.money < adCost) {
-                alert('Not enough money to advertise!');
-                return;
-            }
-            state.money -= adCost;
-            const boostAmount = 0.2;
-            areas[state.location].customerRate += boostAmount;
-            state.advertisingActive = true;
-            state.newsEvents.push(`Advertised in ${state.location}. Customer rate increased by ${boostAmount}.`);
-
-            // Remove the advertising boost after 1 in-game hour
-            setTimeout(() => {
-                areas[state.location].customerRate -= boostAmount;
-                state.advertisingActive = false;
-                state.newsEvents.push(`Advertising campaign ended in ${state.location}. Customer rate reverted.`);
-                updateNewsTicker();
-                updateDisplay();
-            }, 30000); // 30 seconds real time = 1 in-game hour
-
-            updateNewsTicker();
-            updateDisplay();
-        }
-
-        // Buy Equipment to reduce ingredient consumption
-        function buyEquipment() {
-            const equipmentCost = 150;
-            if (state.money < equipmentCost) {
-                alert('Not enough money to buy equipment!');
-                return;
-            }
-            state.money -= equipmentCost;
-            state.equipmentUpgrades += 1;
-            state.newsEvents.push(`Purchased equipment upgrade. Ingredient consumption reduced by 10%.`);
-            updateNewsTicker();
-            updateDisplay();
-        }
-
-        // Hire Staff to automate serving and reduce fines
-        function hireStaff() {
-            const staffCost = 200;
-            if (state.money < staffCost) {
-                alert('Not enough money to hire staff!');
-                return;
-            }
-            state.money -= staffCost;
-            state.staffHired = true;
-            state.newsEvents.push(`Hired staff. Serving customers is now automated. Fines reduced by 50%.`);
-            updateNewsTicker();
-            updateDisplay();
-        }
-
-        // Initialize
-        updateDisplay();
-        checkOpenHours(); // Ensure isOpen is set correctly at start
-
-        // Game Time Management
-        function updateGameTime() {
-            state.gameTime.minute += 30; // Each interval represents 30 real seconds = 1 in-game hour
-            if (state.gameTime.minute >= 60) {
-                state.gameTime.minute -= 60;
-                state.gameTime.hour += 1;
-            }
-            if (state.gameTime.hour >= 24) {
-                state.gameTime.hour -= 24;
-                state.gameTime.day += 1;
-                // Reset events for the new day
-                state.events = shuffleArray(predefinedEvents.slice());
-            }
-            displayGameTime();
-            checkOpenHours();
-            triggerEvents();
-        }
-
-        // Display Game Time with Minutes
-        function displayGameTime() {
-            let hour = state.gameTime.hour;
-            let minute = state.gameTime.minute;
-            let period = 'AM';
-            if (hour >= 12) {
-                period = 'PM';
-                if (hour > 12) hour -= 12;
-            }
-            if (hour === 0) {
-                hour = 12;
-            }
-            let minuteStr = minute.toString().padStart(2, '0');
-            document.getElementById('current-time').innerText = `${hour}:${minuteStr} ${period}`;
-        }
-
-        // Check if within operating hours
-        function checkOpenHours() {
-            const currentHour = state.gameTime.hour;
-            if (currentHour >= 8 && currentHour <= 21) {
-                // Open
-                if (!state.isOpen) {
-                    state.isOpen = true;
-                    state.newsEvents.push('Your food truck is now OPEN for business!');
-                    updateNewsTicker();
-                    updateDisplay();
-                }
-            } else {
-                // Closed
-                if (state.isOpen) {
-                    state.isOpen = false;
-                    state.newsEvents.push('Your food truck is now CLOSED.');
-                    updateNewsTicker();
-                    updateDisplay();
-                }
-            }
-        }
-
-        // Trigger Events based on game time
-        function triggerEvents() {
-            // Assuming events are spread out over the game day
-            const eventChance = 0.2; // Increased chance to make game more dynamic
-            if (Math.random() < eventChance && state.events.length > 0) {
-                const event = state.events.pop();
-                handleEvent(event);
-            }
-        }
-
-        // Handle Events
-        function handleEvent(event) {
-            switch(event.type) {
-                case 'increase':
-                    if (areas[event.area]) { // Ensure area exists
-                        areas[event.area].customerRate += event.value;
-                        // Optional: Cap customerRate to 1.0 to prevent it from exceeding 100%
-                        areas[event.area].customerRate = Math.min(areas[event.area].customerRate, 1.0);
-                        state.newsEvents.push(event.message);
-                        console.log(`Event Triggered: ${event.message}`);
-                        console.log(`New customerRate for ${event.area}: ${areas[event.area].customerRate}`);
-                    }
-                    break;
-                case 'decrease':
-                    if (areas[event.area]) { // Ensure area exists
-                        // If staff is hired, reduce the decrease effect
-                        const decreaseValue = state.staffHired ? event.value * 0.5 : event.value;
-                        areas[event.area].customerRate = Math.max(areas[event.area].customerRate - decreaseValue, 0.1); // Minimum rate of 0.1
-                        state.newsEvents.push(event.message);
-                        console.log(`Event Triggered: ${event.message}`);
-                        console.log(`New customerRate for ${event.area}: ${areas[event.area].customerRate}`);
-                    }
-                    break;
-                case 'bonus':
-                    state.money += event.amount;
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'priceIncrease':
-                    for (let key in prices) {
-                        prices[key] += 1;
-                    }
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'priceDecrease':
-                    for (let key in prices) {
-                        prices[key] = Math.max(prices[key] - 1, 1);
-                    }
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'priceDecreaseAll':
-                    for (let key in prices) {
-                        prices[key] = Math.max(prices[key] - 2, 1);
-                    }
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'upgradeCostIncrease':
-                    // Example: future upgrades cost more
-                    // Implement as needed
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'closure':
-                    state.isOpen = false;
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    break;
-                case 'doubleEarnings':
-                    state.doubleEarnings = true;
-                    state.newsEvents.push(event.message);
-                    console.log(`Event Triggered: ${event.message}`);
-                    // Disable double earnings after 1 in-game day (30 real seconds * 24 = 720 seconds)
-                    setTimeout(() => { 
-                        state.doubleEarnings = false; 
-                        console.log('Double earnings event ended.');
-                        state.newsEvents.push('Double earnings event has ended.');
-                        updateNewsTicker();
-                        updateDisplay();
-                    }, 30000 * 24); // 720000 ms = 12 minutes real time
-                    break;
-                case 'fine':
-                    // If staff is hired, reduce the fine by 50%
-                    const fineAmount = state.staffHired ? event.amount * 0.5 : event.amount;
-                    state.money -= fineAmount;
-                    state.newsEvents.push(`Fine imposed: $${fineAmount}.`);
-                    console.log(`Event Triggered: Fine of $${fineAmount} imposed.`);
-                    break;
-                default:
-                    break;
-            }
-            updateNewsTicker();
-            updateDisplay(); // Update display after event
-        }
-
-        // Update News Ticker
-        function updateNewsTicker() {
-            const ticker = document.getElementById('news-ticker');
-            if (state.newsEvents.length > 0) {
-                ticker.innerText = state.newsEvents.join(' *** ');
-                // Clear events after displaying
-                state.newsEvents = [];
-            }
-        }
-
-        // Customer Spawning
-        function spawnCustomer() {
-            if (!state.isOpen) {
-                scheduleNextCustomer();
-                return;
-            }
-            const area = state.location;
-            let rate = areas[area].customerRate;
-            // If equipment upgrades reduce ingredient consumption, potentially influence customer satisfaction
-            // Implement as needed
-
-            const chance = Math.random();
-            console.log(`Attempting to spawn customer in ${area} with rate ${rate}`);
-            if (chance < rate) {
-                // Define possible orders
-                const orderTypes = Object.keys(recipes);
-                const newOrder = orderTypes[Math.floor(Math.random() * orderTypes.length)];
-                state.queue.push({ order: newOrder });
-                console.log(`Customer arrived: ${newOrder}`);
-
-                // Check for overcrowded queue
-                if (state.queue.length > 10) { // Arbitrary threshold for overcrowding
-                    const overcrowdFine = 20;
-                    state.money -= overcrowdFine;
-                    state.newsEvents.push(`Overcrowded queue! Fine of $${overcrowdFine} imposed.`);
-                }
-
-                updateNewsTicker();
-                updateDisplay();
-            }
-            scheduleNextCustomer();
-        }
-
-        // Schedule Next Customer Spawn
-        function scheduleNextCustomer() {
-            const interval = Math.floor(Math.random() * 10000) + 5000; // 5 to 15 seconds
-            state.customerSpawnTimeout = setTimeout(spawnCustomer, interval);
-            console.log(`Next customer spawn scheduled in ${interval / 1000} seconds.`);
-        }
-
-        // Start Customer Spawning
-        scheduleNextCustomer();
-
-        // Game Time Interval
-        setInterval(updateGameTime, 30000); // 30 seconds real time = 1 hour in game
     </script>
 </body>
 </html>
-
